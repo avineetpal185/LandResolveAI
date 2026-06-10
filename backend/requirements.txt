@@ -14,3 +14,4 @@ langchain-huggingface
 faiss-cpu
 sentence-transformers
 pytesseract
+pdfplumber
