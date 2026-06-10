@@ -10,3 +10,4 @@ pillow
 pymupdf
 python-docx
 langchain-community
+langchain-huggingface
