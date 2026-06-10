@@ -123,7 +123,7 @@ export default function Home() {
     {
       role: "assistant",
       content:
-        "👋 Welcome to LandResolve AI. Describe your land dispute problem in simple language and I'll provide expert legal guidance. !",
+        "👋 Welcome to LandResolve AI. Describe your land dispute problem in simple language and I'll provide expert legal guidance. !",  
     },
   ]);
 
