@@ -1,0 +1,30 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+
+# Database
+*.db
+
+# Generated files
+generated_files/
+
+# FAISS
+faiss_index/
+
+# Node modules
+node_modules/
+
+# Next.js
+.next/
+
+# Logs
+*.log
+
+# PDF/images
+*.pdf
+*.png
+*.jpg
