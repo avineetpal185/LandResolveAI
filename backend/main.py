@@ -35,7 +35,7 @@ import google.generativeai as genai
 load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-
+print("====APP STARTED====")
 print("GEMINI KEY FOUND:", GEMINI_API_KEY is not None)
 print("GOOGLE KEY FOUND:", os.getenv("GOOGLE_API_KEY") is not None)
 
