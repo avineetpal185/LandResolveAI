@@ -590,7 +590,7 @@ Legal Context:
                     "Content-Type": "application/json"
                 },
                 json={
-                    "model": "mistralai/mistral-7b-instruct:free",
+                    "model": "openai/gpt-oss-20b"
                     "messages": [
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": prompt}
