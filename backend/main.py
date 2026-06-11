@@ -589,7 +589,7 @@ Legal Context:
                     "Content-Type": "application/json"
                 },
                 json={
-                    "model": "openai/gpt-oss-20b:free"
+                    "model": "openai/gpt-oss-20b:free",
                     "messages": [
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": prompt}
@@ -597,6 +597,8 @@ Legal Context:
                 },
                 timeout=60
             )
+            print("STATUS:", response.status_code)
+            print("TEXT:", response.text)
 
             data = response.json()
 
