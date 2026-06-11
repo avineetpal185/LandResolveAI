@@ -589,7 +589,7 @@ Legal Context:
                     "Content-Type": "application/json"
                 },
                 json={
-                    "model": "openai/gpt-oss-20b:free",
+                    "model": "meta-llama/llama-3.3-8b-instruct:free",
                     "messages": [
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": prompt}
