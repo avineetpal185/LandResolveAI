@@ -582,6 +582,7 @@ Legal Context:
         prompt = system_prompt + "\n\nUser: " + latest_message
 
         try:
+            print("MODEL USED =meta-llama")
             response = requests.post(
                 "https://openrouter.ai/api/v1/chat/completions",
                 headers={
