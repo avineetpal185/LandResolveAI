@@ -28,6 +28,19 @@ from reportlab.lib.units import cm
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable, Table, TableStyle
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
+from dotenv import load_dotenv
+
+import google.generativeai as genai
+
+load_dotenv()
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+genai.configure(api_key=GEMINI_API_KEY)
+
+model = genai.GenerativeModel("gemini-2.5-flash")
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 
 
@@ -48,6 +61,7 @@ app.add_middleware(
     expose_headers=["X-Conversation-Id"],
 )
 
+
 # =========================
 # SCHEMAS
 # =========================
@@ -56,17 +70,21 @@ class MessageSchema(BaseModel):
     role: str
     content: str
 
+
 class ChatRequest(BaseModel):
     messages: list[MessageSchema]
     conversation_id: Optional[int] = None
+
 
 class GenerateRequest(BaseModel):
     content: str
     title: str = "LandResolve AI Report"
     format: str  # "pdf" or "image"
 
+
 class AIImageRequest(BaseModel):
     prompt: str
+
 
 # =========================
 # HELPERS
@@ -98,7 +116,7 @@ def parse_content_to_sections(content: str):
     for line in lines:
         if line.startswith(("📞", "Consult a lawyer")):
             closing = clean_text_for_render(line)
-        elif any(line.startswith(e) for e in ["⚖️","📄","🏛️","💡","🔔","1️⃣","2️⃣","3️⃣","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","-","*","•"]):
+        elif any(line.startswith(e) for e in ["⚖️", "📄", "🏛️", "💡", "🔔", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "-", "*", "•"]):
             bullet_lines.append(clean_text_for_render(line))
         else:
             intro_lines.append(clean_text_for_render(line))
@@ -169,11 +187,11 @@ def generate_pdf(content: str, title: str) -> str:
     header_data = [[Paragraph(f"LandResolve AI  |  Generated: {now}", header_style)]]
     header_table = Table(header_data, colWidths=[17*cm])
     header_table.setStyle(TableStyle([
-        ("BACKGROUND", (0,0), (-1,-1), colors.HexColor("#f0fdf4")),
-        ("TOPPADDING", (0,0), (-1,-1), 8),
-        ("BOTTOMPADDING", (0,0), (-1,-1), 8),
-        ("LEFTPADDING", (0,0), (-1,-1), 12),
-        ("RIGHTPADDING", (0,0), (-1,-1), 12),
+        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f0fdf4")),
+        ("TOPPADDING", (0, 0), (-1, -1), 8),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+        ("LEFTPADDING", (0, 0), (-1, -1), 12),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 12),
     ]))
     story.append(header_table)
     story.append(Spacer(1, 0.5*cm))
@@ -196,12 +214,12 @@ def generate_pdf(content: str, title: str) -> str:
     closing_data = [[Paragraph(f"Note: {closing}", closing_style)]]
     closing_table = Table(closing_data, colWidths=[17*cm])
     closing_table.setStyle(TableStyle([
-        ("BACKGROUND", (0,0), (-1,-1), colors.HexColor("#f0fdf4")),
-        ("TOPPADDING", (0,0), (-1,-1), 10),
-        ("BOTTOMPADDING", (0,0), (-1,-1), 10),
-        ("LEFTPADDING", (0,0), (-1,-1), 14),
-        ("RIGHTPADDING", (0,0), (-1,-1), 14),
-        ("BOX", (0,0), (-1,-1), 1.5, colors.HexColor("#22c55e")),
+        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f0fdf4")),
+        ("TOPPADDING", (0, 0), (-1, -1), 10),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+        ("LEFTPADDING", (0, 0), (-1, -1), 14),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 14),
+        ("BOX", (0, 0), (-1, -1), 1.5, colors.HexColor("#22c55e")),
     ]))
     story.append(closing_table)
     story.append(Spacer(1, 0.6*cm))
@@ -314,12 +332,12 @@ def generate_image(content: str, title: str) -> str:
 
 
 # =========================
-# ✅ FIXED: AI IMAGE GENERATION via Pollinations
+# AI IMAGE GENERATION via Pollinations
 # Returns { url, prompt } — no base64, just a saved file URL
 # =========================
 
-
 HF_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
+
 
 async def _fetch_and_save_ai_image(subject: str) -> dict:
     subject = subject.strip()
@@ -351,7 +369,6 @@ async def _fetch_and_save_ai_image(subject: str) -> dict:
                 json=payload,
             )
 
-        # Model may still be loading — return friendly message
         if response.status_code == 503:
             return {"error": "Model is loading on Hugging Face, please wait 20 seconds and try again."}
 
@@ -379,7 +396,6 @@ async def _fetch_and_save_ai_image(subject: str) -> dict:
         return {"error": str(e)}
 
 
-# ✅ FIXED endpoint name matches frontend fetch call: /generate-ai-image
 @app.post("/generate-ai-image")
 async def generate_ai_image_endpoint(request: AIImageRequest):
     prompt = request.prompt.strip()
@@ -392,7 +408,6 @@ async def generate_ai_image_endpoint(request: AIImageRequest):
         status = 504 if "timed out" in result["error"] else 500
         return JSONResponse(result, status_code=status)
 
-    # ✅ Returns { url: "/files/abc.png", prompt: "forest" }
     return JSONResponse(result)
 
 
@@ -421,9 +436,6 @@ async def generate_file(request: GenerateRequest):
 
 # =========================
 # CHAT API
-# ✅ FIXED: removed image auto-detection from /chat
-#    Images are now handled exclusively by /generate-ai-image
-#    called directly from the frontend — no more conflicting paths
 # =========================
 
 @app.post("/chat")
@@ -560,16 +572,20 @@ Legal Context:
 
     def generate():
         chat_history = [{"role": "system", "content": system_prompt}]
+
         for msg in request.messages[-6:]:
-            chat_history.append({"role": msg.role, "content": msg.content})
+            chat_history.append({
+                "role": msg.role,
+                "content": msg.content
+            })
 
-            full_ai_response = "⚖️ LandResolve AI is running successfully on Render server 🚀"
+        prompt = system_prompt + "\n\nUser: " + latest_message
 
-            yield full_ai_response
+        response = model.generate_content(prompt)
 
-        
+        full_ai_response = response.text
 
-        
+        yield full_ai_response
 
         try:
             save_db = SessionLocal()
@@ -584,7 +600,8 @@ Legal Context:
             print("SAVE ERROR:", e)
 
     return StreamingResponse(
-        generate(), media_type="text/plain",
+        generate(),
+        media_type="text/plain",
         headers={"X-Conversation-Id": str(conversation_id)}
     )
 
@@ -654,6 +671,7 @@ async def get_conversations():
     db.close()
     return convs
 
+
 @app.get("/conversations/{conversation_id}")
 async def get_conversation_messages(conversation_id: int):
     db = SessionLocal()
@@ -662,6 +680,7 @@ async def get_conversation_messages(conversation_id: int):
     ).order_by(Message.id.asc()).all()
     db.close()
     return msgs
+
 
 @app.delete("/conversations/{conversation_id}")
 async def delete_conversation(conversation_id: int):
@@ -672,8 +691,10 @@ async def delete_conversation(conversation_id: int):
     db.close()
     return {"success": True}
 
+
 class RenameRequest(BaseModel):
     title: str
+
 
 @app.patch("/conversations/{conversation_id}")
 async def rename_conversation(conversation_id: int, body: RenameRequest):
@@ -685,12 +706,12 @@ async def rename_conversation(conversation_id: int, body: RenameRequest):
     db.close()
     return {"success": True}
 
+
 import uvicorn
 import os
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-
+    port = int(os.environ.get("PORT", 8000))
     uvicorn.run(
         app,
         host="0.0.0.0",

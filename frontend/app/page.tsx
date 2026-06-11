@@ -234,7 +234,7 @@ export default function Home() {
 
   const fetchConversations = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/conversations");
+      const res = await fetch("https://landresolveai.onrender.com/conversations");
       const data = await res.json();
       setConversations(data);
     } catch (e) { console.log(e); }
@@ -242,7 +242,7 @@ export default function Home() {
 
   const loadConversation = async (id: number) => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/conversations/${id}`);
+      const res = await fetch(`https://landresolveai.onrender.com/conversations/${id}`);
       const data = await res.json();
       setMessages(data);
       messagesRef.current = data;
@@ -278,7 +278,7 @@ export default function Home() {
   const submitRename = async (id: number) => {
     if (!renameValue.trim()) { setRenamingId(null); return; }
     try {
-      await fetch(`http://127.0.0.1:8000/conversations/${id}`, {
+      await fetch(`https://landresolveai.onrender.com/conversations/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: renameValue.trim() }),
@@ -292,7 +292,7 @@ export default function Home() {
     e.stopPropagation();
     if (!confirm("Delete this conversation?")) return;
     try {
-      await fetch(`http://127.0.0.1:8000/conversations/${id}`, { method: "DELETE" });
+      await fetch(`https://landresolveai.onrender.com/conversations/${id}`, { method: "DELETE" });
       if (currentConversationId === id) handleNewChat();
       fetchConversations();
     } catch (err) { console.log(err); }
@@ -313,7 +313,7 @@ export default function Home() {
     if (!targetMsg) return;
     setGeneratingIndex(targetMsgIndex);
     try {
-      const res = await fetch("http://127.0.0.1:8000/generate", {
+      const res = await fetch("https://landresolveai.onrender.com/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -328,7 +328,7 @@ export default function Home() {
       } else {
         setGeneratedFiles((prev) => ({
           ...prev,
-          [targetMsgIndex]: { url: `http://127.0.0.1:8000${data.url}`, format: data.format },
+          [targetMsgIndex]: { url: `https://landresolveai.onrender.com${data.url}`, format: data.format },
         }));
       }
     } catch (err) {
@@ -372,7 +372,7 @@ export default function Home() {
 
     try {
       // ✅ FIX 1: correct endpoint name  /generate-ai-image
-      const res = await fetch("http://127.0.0.1:8000/generate-ai-image", {
+      const res = await fetch("https://landresolveai.onrender.com/generate-ai-image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: cleanPrompt }),
@@ -392,7 +392,7 @@ export default function Home() {
       } else {
         // ✅ FIX 2: backend returns { url: "/files/abc.png" }
         //           so we prefix with the backend host to get a full URL
-        const imageUrl = `http://127.0.0.1:8000${data.url}`;
+        const imageUrl = `https://landresolveai.onrender.com${data.url}`;
 
         const imgMsg: Message = {
           role: "ai_image",
@@ -427,7 +427,7 @@ export default function Home() {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      const res = await fetch("http://127.0.0.1:8000/extract-text", {
+      const res = await fetch("https://landresolveai.onrender.com/extract-text", {
         method: "POST",
         body: formData,
       });
@@ -482,7 +482,7 @@ export default function Home() {
       const savedId = localStorage.getItem("conversation_id");
       const conversationIdToSend = conversationIdRef.current ?? (savedId ? Number(savedId) : null);
 
-      const response = await fetch("http://127.0.0.1:8000/chat", {
+      const response = await fetch("https://landresolveai.onrender.com/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: updatedMessages, conversation_id: conversationIdToSend }),
@@ -496,11 +496,16 @@ export default function Home() {
         localStorage.setItem("conversation_id", String(id));
       }
 
+      console.log("STATUS:", response.status);
+      console.log("BODY:", response.body);
+
       if (!response.body) throw new Error("No response body");
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let aiText = "";
       let firstChunk = true;
+
+      
 
       while (true) {
         const { done, value } = await reader.read();
@@ -586,11 +591,14 @@ export default function Home() {
       const savedId = localStorage.getItem("conversation_id");
       const conversationIdToSend = conversationIdRef.current ?? (savedId ? Number(savedId) : null);
 
-      const response = await fetch("http://127.0.0.1:8000/chat", {
+      const response = await fetch("https://landresolveai.onrender.com/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: updatedMessages, conversation_id: conversationIdToSend }),
       });
+
+      console.log("STATUS:", response.status);
+      console.log("BODY:", response.body);
 
       const returnedId = response.headers.get("X-Conversation-Id");
       if (returnedId) {
