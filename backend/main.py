@@ -590,7 +590,7 @@ Legal Context:
                     "Content-Type": "application/json"
                 },
                 json={
-                    "model": "meta-llama/llama-3.3-8b-instruct:free",
+                    "model": "mistralai/mistral-7b-instruct:free",
                     "messages": [
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": prompt}
