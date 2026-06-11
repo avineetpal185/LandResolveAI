@@ -43,7 +43,6 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 model = genai.GenerativeModel("gemini-2.5-flash")
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 
 
@@ -584,9 +583,11 @@ Legal Context:
 
         prompt = system_prompt + "\n\nUser: " + latest_message
 
-        response = model.generate_content(prompt)
-
-        full_ai_response = response.text
+        try:
+            response = model.generate_content(prompt)
+            full_ai_response = response.text
+        except Exception as e:
+            full_ai_response = f"GEMINI ERROR: {str(e)}"
 
         yield full_ai_response
 
