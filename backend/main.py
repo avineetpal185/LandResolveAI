@@ -31,16 +31,15 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable,
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
 from dotenv import load_dotenv
 
-import google.generativeai as genai
+#import google.generativeai as genai
+    
 
 load_dotenv()
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-print("====APP STARTED====")
-print("GEMINI KEY FOUND:", GEMINI_API_KEY is not None)
-print("GOOGLE KEY FOUND:", os.getenv("GOOGLE_API_KEY") is not None)
-
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+
+print("====APP STARTED====")
+print("OPENROUTER KEY FOUND:", OPENROUTER_API_KEY is not None)
 
 
 
