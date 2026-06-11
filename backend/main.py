@@ -20,6 +20,7 @@ import os
 import re
 import uuid
 import httpx
+import requests 
 from datetime import datetime
 
 from reportlab.lib.pagesizes import A4
@@ -39,9 +40,7 @@ print("====APP STARTED====")
 print("GEMINI KEY FOUND:", GEMINI_API_KEY is not None)
 print("GOOGLE KEY FOUND:", os.getenv("GOOGLE_API_KEY") is not None)
 
-genai.configure(api_key=GEMINI_API_KEY)
-
-model = genai.GenerativeModel("gemini-2.5-flash")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 
 
@@ -584,10 +583,28 @@ Legal Context:
         prompt = system_prompt + "\n\nUser: " + latest_message
 
         try:
-            response = model.generate_content(prompt)
-            full_ai_response = response.text
+            response = requests.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": "deepseek/deepseek-chat-v3-0324:free",
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": prompt}
+                    ]
+                },
+                timeout=60
+            )
+
+            data = response.json()
+
+            full_ai_response = data["choices"][0]["message"]["content"]
+
         except Exception as e:
-            full_ai_response = f"GEMINI ERROR: {str(e)}"
+            full_ai_response = f"OPENROUTER ERROR: {str(e)}"
 
         yield full_ai_response
 
