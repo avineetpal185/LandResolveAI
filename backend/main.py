@@ -36,6 +36,9 @@ load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
+print("GEMINI KEY FOUND:", GEMINI_API_KEY is not None)
+print("GOOGLE KEY FOUND:", os.getenv("GOOGLE_API_KEY") is not None)
+
 genai.configure(api_key=GEMINI_API_KEY)
 
 model = genai.GenerativeModel("gemini-2.5-flash")
