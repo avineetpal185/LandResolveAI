@@ -32,7 +32,7 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
 from dotenv import load_dotenv
 
 #import google.generativeai as genai
-    
+
 
 load_dotenv()
 
@@ -600,7 +600,12 @@ Legal Context:
 
             data = response.json()
 
-            full_ai_response = data["choices"][0]["message"]["content"]
+            print("OPENROUTER RESPONSE:", data)
+
+            if "choices" in data:
+                full_ai_response = data["choices"][0]["message"]["content"]
+            else:
+                full_ai_response = str(data)
 
         except Exception as e:
             full_ai_response = f"OPENROUTER ERROR: {str(e)}"
