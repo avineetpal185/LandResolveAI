@@ -38,7 +38,7 @@ load_dotenv()
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
-print("====APP STARTED====")
+print("====APP STARTED VERSION 999====")
 print("OPENROUTER KEY FOUND:", OPENROUTER_API_KEY is not None)
 
 
