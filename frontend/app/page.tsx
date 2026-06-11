@@ -873,6 +873,8 @@ export default function Home() {
           .es-title { font-size: 20px; }
           .es-chips { display: none; }
         }
+
+        
       `}</style>
 
       {/* INTRO OVERLAY */}
@@ -908,6 +910,13 @@ export default function Home() {
         {/* SIDEBAR */}
         <aside className={`sidebar${sidebarOpen ? "" : " closed"}`}>
           <div className="sidebar-inner">
+
+          <button
+            className="mobile-close-btn"
+            onClick={() => setSidebarOpen(false)}
+          >
+            ✕
+          </button>
             <div className="sidebar-logo">
               <div className="logo-icon"><Scale size={18} color="#fff" /></div>
               <span className="logo-text">LandResolve</span>
