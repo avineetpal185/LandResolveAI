@@ -582,7 +582,7 @@ Legal Context:
         prompt = system_prompt + "\n\nUser: " + latest_message
 
         try:
-            print("MODEL USED =meta-llama")
+            print("MODEL USED = GPT-OSS")
             response = requests.post(
                 "https://openrouter.ai/api/v1/chat/completions",
                 headers={
@@ -590,7 +590,7 @@ Legal Context:
                     "Content-Type": "application/json"
                 },
                 json={
-                    "model": "openai/gpt-oss-20b"
+                    "model": "openai/gpt-oss-20b",
                     "messages": [
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": prompt}
