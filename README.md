@@ -10,6 +10,7 @@ https://landresolve-ai.vercel.app/
 
 ## 📱 Android APK Download
 
+APK Download:
 https://github.com/avineetpal185/LandResolveAI/releases/latest
 
 ## 🚀 Features
