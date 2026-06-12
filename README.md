@@ -6,7 +6,7 @@ The project is available as both a web application and an Android application.
 
 ## 🌐 Live Website
 
-https://landresolve-ai.vercel.app/
+Website link- https://landresolve-ai.vercel.app/
 
 ## 📱 Android APK Download
 
