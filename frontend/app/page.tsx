@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import {
-  Send, Mic, Upload, Scale, ShieldCheck, Bot, User, ArrowDown,
+  Send, Scale, ShieldCheck, Bot, User, ArrowDown,
   PanelLeftClose, PanelLeftOpen, Plus, MessageSquare, Trash2,
-  Sparkles, Copy, Check, Pencil, FileText, ImageIcon, X, Paperclip,
+  Sparkles, Copy, Check, Pencil, FileText, ImageIcon, X,
   FileDown, Image as ImageLucide, Loader2, Download, Wand2,
 } from "lucide-react";
 
@@ -56,7 +56,6 @@ function detectGenerateIntent(text: string): "pdf" | "image" | "ai_image" | null
   return null;
 }
 
-// ─── AIImage: renders URL returned from backend ───
 function AIImage({ url, prompt }: { url: string; prompt: string }) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
@@ -99,11 +98,6 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [hoveredConv, setHoveredConv] = useState<number | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [uploadedText, setUploadedText] = useState<string>("");
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string>("");
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [renamingId, setRenamingId] = useState<number | null>(null);
   const [renameValue, setRenameValue] = useState("");
   const [editingMsgIndex, setEditingMsgIndex] = useState<number | null>(null);
@@ -118,12 +112,13 @@ export default function Home() {
   const [showSubtitle, setShowSubtitle] = useState(false);
   const [showBadge, setShowBadge] = useState(false);
   const [hasFirstMessage, setHasFirstMessage] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
 
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
       content:
-        "👋 Welcome to LandResolve AI. Describe your land dispute problem in simple language and I'll provide expert legal guidance. !",  
+        "👋 Welcome to LandResolve AI. Describe your land dispute problem in simple language and I'll provide expert legal guidance. !",
     },
   ]);
 
@@ -337,12 +332,6 @@ export default function Home() {
     setGeneratingIndex(null);
   };
 
-  // ─────────────────────────────────────────────────────────────
-  // ✅ FIXED: handleAIImageGenerate
-  //    1. Calls the CORRECT endpoint  →  /generate-ai-image
-  //    2. Reads  data.url  (file path) instead of data.image_base64
-  //    3. Prefixes backend host so the <img> src is a full URL
-  // ─────────────────────────────────────────────────────────────
   const handleAIImageGenerate = async (prompt: string) => {
     setIsLoading(true);
     startThinking(true);
@@ -355,7 +344,6 @@ export default function Home() {
     setMessages(updated);
     messagesRef.current = updated;
 
-    // Strip trigger phrases to get clean subject
     const cleanPrompt = prompt
       .replace(/generate (an? )?image of/gi, "")
       .replace(/create (an? )?image of/gi, "")
@@ -371,7 +359,6 @@ export default function Home() {
       .trim();
 
     try {
-      // ✅ FIX 1: correct endpoint name  /generate-ai-image
       const res = await fetch("https://landresolveai.onrender.com/generate-ai-image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -390,14 +377,11 @@ export default function Home() {
         setMessages(final);
         messagesRef.current = final;
       } else {
-        // ✅ FIX 2: backend returns { url: "/files/abc.png" }
-        //           so we prefix with the backend host to get a full URL
         const imageUrl = `https://landresolveai.onrender.com${data.url}`;
-
         const imgMsg: Message = {
           role: "ai_image",
           content: JSON.stringify({
-            url: imageUrl,           // ✅ full http URL — no more broken image
+            url: imageUrl,
             prompt: data.prompt || cleanPrompt,
           }),
         };
@@ -416,40 +400,6 @@ export default function Home() {
       messagesRef.current = final;
     }
     setIsLoading(false);
-  };
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setIsUploading(true);
-    setUploadError("");
-    setUploadedFile(file);
-    const formData = new FormData();
-    formData.append("file", file);
-    try {
-      const res = await fetch("https://landresolveai.onrender.com/extract-text", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (data.error) {
-        setUploadError(data.error);
-        setUploadedFile(null);
-      } else {
-        setUploadedText(data.text);
-      }
-    } catch (err) {
-      setUploadError("Failed to upload file.");
-      setUploadedFile(null);
-    }
-    setIsUploading(false);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
-
-  const clearUpload = () => {
-    setUploadedFile(null);
-    setUploadedText("");
-    setUploadError("");
   };
 
   const handleCopy = (text: string, index: number) => {
@@ -496,16 +446,11 @@ export default function Home() {
         localStorage.setItem("conversation_id", String(id));
       }
 
-      console.log("STATUS:", response.status);
-      console.log("BODY:", response.body);
-
       if (!response.body) throw new Error("No response body");
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let aiText = "";
       let firstChunk = true;
-
-      
 
       while (true) {
         const { done, value } = await reader.read();
@@ -577,12 +522,7 @@ export default function Home() {
     isAtBottomRef.current = true;
     setShowScrollBtn(false);
 
-    const finalContent = uploadedText
-      ? `📄 [Extracted from: ${uploadedFile?.name}]\n\n${uploadedText}\n\n---\nUser question: ${currentInput}`
-      : currentInput;
-    clearUpload();
-
-    const userMessage: Message = { role: "user", content: finalContent };
+    const userMessage: Message = { role: "user", content: currentInput };
     const updatedMessages = [...messagesRef.current, userMessage];
     setMessages(updatedMessages);
     messagesRef.current = updatedMessages;
@@ -596,9 +536,6 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: updatedMessages, conversation_id: conversationIdToSend }),
       });
-
-      console.log("STATUS:", response.status);
-      console.log("BODY:", response.body);
 
       const returnedId = response.headers.get("X-Conversation-Id");
       if (returnedId) {
@@ -664,8 +601,29 @@ export default function Home() {
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
 
+        /* ── KEYFRAMES ── */
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.85); } }
+        @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.5; } 40% { transform: translateY(-5px); opacity: 1; } }
+        @keyframes msgFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes msgSlideInLeft { from { opacity: 0; transform: translateX(-18px) translateY(6px); } to { opacity: 1; transform: translateX(0) translateY(0); } }
+        @keyframes msgSlideInRight { from { opacity: 0; transform: translateX(18px) translateY(6px); } to { opacity: 1; transform: translateX(0) translateY(0); } }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        @keyframes glowPulse { 0%, 100% { box-shadow: 0 0 14px var(--accent-glow); } 50% { box-shadow: 0 0 28px var(--accent-glow-strong), 0 0 50px rgba(34,197,94,0.12); } }
+        @keyframes sendPop { 0% { transform: scale(1); } 40% { transform: scale(0.88); } 70% { transform: scale(1.12); } 100% { transform: scale(1); } }
+        @keyframes thinkingSlide { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes particleRise { 0% { opacity: 0; transform: translateY(0) scale(0); } 8% { opacity: 0.5; } 92% { opacity: 0.2; } 100% { opacity: 0; transform: translateY(-100vh) scale(1.5); } }
+        @keyframes introLogoIn { from { opacity: 0; transform: scale(0.6) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes cursorBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+        @keyframes chipHoverGlow { from { box-shadow: none; } to { box-shadow: 0 0 16px rgba(34,197,94,0.2); } }
+        @keyframes scrollBtnBounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-4px); } }
+        @keyframes avatarPop { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+        @keyframes inputGlow { from { box-shadow: 0 0 0 0px rgba(34,197,94,0); } to { box-shadow: 0 0 0 4px rgba(34,197,94,0.09); } }
+        @keyframes sidebarItemIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes ripple { 0% { transform: scale(0); opacity: 0.5; } 100% { transform: scale(2.5); opacity: 0; } }
+        @keyframes typewriterCaret { 0%,100%{border-right-color:#22c55e} 50%{border-right-color:transparent} }
 
+        /* ── INTRO ── */
         .intro-overlay {
           position: fixed; inset: 0; z-index: 9999;
           background: #0a0a0f;
@@ -679,11 +637,7 @@ export default function Home() {
           display: flex; align-items: center; justify-content: center;
           margin-bottom: 32px;
           box-shadow: 0 0 60px rgba(34,197,94,0.25), 0 0 120px rgba(34,197,94,0.1);
-          animation: introLogoIn 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
-        }
-        @keyframes introLogoIn {
-          from { opacity: 0; transform: scale(0.6) translateY(16px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
+          animation: introLogoIn 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.2s both, glowPulse 3s ease-in-out infinite;
         }
         .intro-title {
           font-size: clamp(26px, 4vw, 40px); font-weight: 700;
@@ -697,7 +651,6 @@ export default function Home() {
           box-shadow: 0 0 10px rgba(34,197,94,0.6);
         }
         .intro-cursor.hidden { opacity: 0; animation: none; }
-        @keyframes cursorBlink { 0%,100%{opacity:1} 50%{opacity:0} }
         .intro-subtitle {
           margin-top: 14px; font-size: 15px; color: #52526a; text-align: center;
           opacity: 0; transform: translateY(8px);
@@ -717,33 +670,52 @@ export default function Home() {
           background: #22c55e; opacity: 0;
           animation: particleRise linear infinite;
         }
-        @keyframes particleRise {
-          0% { opacity: 0; transform: translateY(0) scale(0); }
-          8% { opacity: 0.5; }
-          92% { opacity: 0.2; }
-          100% { opacity: 0; transform: translateY(-100vh) scale(1.5); }
-        }
 
+        /* ── APP SHELL ── */
         .app-shell { display: flex; height: 100vh; overflow: hidden; background: var(--bg-base); }
+
+        /* ── SIDEBAR ── */
         .sidebar {
           width: var(--sidebar-width); min-width: var(--sidebar-width);
           background: var(--bg-surface); border-right: 1px solid var(--border);
           display: flex; flex-direction: column; overflow: hidden;
-          transition: width 0.5s cubic-bezier(0.4,0,0.2,1), min-width 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+          transition: width 0.45s cubic-bezier(0.4,0,0.2,1), min-width 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.3s, box-shadow 0.3s;
           position: relative; z-index: 20;
         }
         .sidebar.closed { width: 0; min-width: 0; opacity: 0; pointer-events: none; }
         .sidebar-inner { width: var(--sidebar-width); height: 100%; display: flex; flex-direction: column; padding: 20px 14px; overflow: hidden; }
         .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 6px 8px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-        .logo-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #16a34a, #22c55e); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px var(--accent-glow-strong); flex-shrink: 0; }
+        .logo-icon {
+          width: 36px; height: 36px; border-radius: 10px;
+          background: linear-gradient(135deg, #16a34a, #22c55e);
+          display: flex; align-items: center; justify-content: center;
+          box-shadow: 0 0 20px var(--accent-glow-strong); flex-shrink: 0;
+          transition: box-shadow 0.3s, transform 0.3s;
+        }
+        .logo-icon:hover { box-shadow: 0 0 32px rgba(34,197,94,0.4); transform: scale(1.05) rotate(-3deg); }
         .logo-text { font-size: 15px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; white-space: nowrap; }
         .logo-badge { font-size: 9px; font-weight: 600; letter-spacing: 0.5px; color: var(--accent); background: var(--accent-glow); border: 1px solid rgba(34,197,94,0.2); border-radius: 4px; padding: 2px 5px; margin-left: auto; flex-shrink: 0; white-space: nowrap; }
-        .new-chat-btn { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: var(--radius-md); background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff; font-size: 13.5px; font-weight: 600; border: none; cursor: pointer; width: 100%; text-align: left; transition: all 0.2s ease; box-shadow: 0 4px 16px var(--accent-glow-strong); white-space: nowrap; overflow: hidden; margin-bottom: 20px; font-family: var(--font); }
-        .new-chat-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(34,197,94,0.35); }
+        .new-chat-btn {
+          display: flex; align-items: center; gap: 10px; padding: 11px 14px;
+          border-radius: var(--radius-md); background: linear-gradient(135deg, #16a34a, #22c55e);
+          color: #fff; font-size: 13.5px; font-weight: 600; border: none; cursor: pointer;
+          width: 100%; text-align: left;
+          transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+          box-shadow: 0 4px 16px var(--accent-glow-strong); white-space: nowrap; overflow: hidden;
+          margin-bottom: 20px; font-family: var(--font); position: relative;
+        }
+        .new-chat-btn:hover { transform: translateY(-2px) scale(1.01); box-shadow: 0 8px 28px rgba(34,197,94,0.4); }
+        .new-chat-btn:active { transform: translateY(0) scale(0.98); }
         .conv-section-label { font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-muted); padding: 0 8px; margin-bottom: 8px; white-space: nowrap; }
         .conv-list { flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 2px; }
-        .conv-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.18s ease; position: relative; border: 1px solid transparent; white-space: nowrap; overflow: hidden; }
-        .conv-item:hover { background: var(--bg-hover); border-color: var(--border); }
+        .conv-item {
+          display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+          border-radius: var(--radius-sm); cursor: pointer;
+          transition: background 0.2s ease, border-color 0.2s, transform 0.15s;
+          position: relative; border: 1px solid transparent; white-space: nowrap; overflow: hidden;
+          animation: sidebarItemIn 0.3s ease both;
+        }
+        .conv-item:hover { background: var(--bg-hover); border-color: var(--border); transform: translateX(2px); }
         .conv-item.active { background: var(--bg-active); border-color: rgba(34,197,94,0.2); }
         .conv-item.active .conv-icon { color: var(--accent); }
         .conv-icon { color: var(--text-muted); flex-shrink: 0; transition: color 0.2s; }
@@ -753,128 +725,233 @@ export default function Home() {
         .conv-actions { display: flex; gap: 2px; opacity: 0; transition: opacity 0.2s; flex-shrink: 0; }
         .conv-item:hover .conv-actions { opacity: 1; }
         .conv-action-btn { width: 24px; height: 24px; border-radius: 5px; border: none; background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-        .conv-action-btn:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); }
+        .conv-action-btn:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); transform: scale(1.1); }
         .conv-action-btn.delete-btn:hover { background: rgba(239,68,68,0.15); color: #ef4444; }
         .rename-input { flex: 1; background: var(--bg-base); border: 1px solid rgba(34,197,94,0.4); border-radius: 5px; color: var(--text-primary); font-size: 13px; font-family: var(--font); padding: 2px 7px; outline: none; min-width: 0; }
         .conv-active-indicator { width: 3px; height: 24px; background: var(--accent); border-radius: 2px; position: absolute; left: 0; top: 50%; transform: translateY(-50%); box-shadow: 0 0 8px var(--accent-glow-strong); }
         .sidebar-footer { padding-top: 16px; border-top: 1px solid var(--border); margin-top: 8px; }
         .sidebar-footer-text { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; padding: 4px 8px; white-space: nowrap; }
 
+        /* ── MAIN AREA ── */
         .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-base); position: relative; min-width: 0; }
-        .header { display: flex; align-items: center; gap: 14px; padding: 0 20px; height: 60px; border-bottom: 1px solid var(--border); background: rgba(10,10,15,0.8); backdrop-filter: blur(12px); position: relative; z-index: 10; flex-shrink: 0; }
-        .toggle-btn { width: 34px; height: 34px; border-radius: var(--radius-sm); border: 1px solid var(--border-strong); background: var(--bg-elevated); color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; flex-shrink: 0; }
-        .toggle-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+        /* ── HEADER ── */
+        .header {
+          display: flex; align-items: center; gap: 14px; padding: 0 20px; height: 60px;
+          border-bottom: 1px solid var(--border);
+          background: rgba(10,10,15,0.85); backdrop-filter: blur(16px);
+          position: relative; z-index: 10; flex-shrink: 0;
+        }
+        .toggle-btn {
+          width: 34px; height: 34px; border-radius: var(--radius-sm);
+          border: 1px solid var(--border-strong); background: var(--bg-elevated);
+          color: var(--text-secondary); cursor: pointer; display: flex; align-items: center;
+          justify-content: center;
+          transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); flex-shrink: 0;
+        }
+        .toggle-btn:hover { background: var(--bg-hover); color: var(--text-primary); transform: scale(1.08); }
+        .toggle-btn:active { transform: scale(0.94); }
         .header-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.2px; }
-        .header-title-icon { width: 28px; height: 28px; border-radius: 8px; background: var(--accent-glow); border: 1px solid rgba(34,197,94,0.2); display: flex; align-items: center; justify-content: center; color: var(--accent); }
+        .header-title-icon { width: 28px; height: 28px; border-radius: 8px; background: var(--accent-glow); border: 1px solid rgba(34,197,94,0.2); display: flex; align-items: center; justify-content: center; color: var(--accent); transition: all 0.25s; }
+        .header-title-icon:hover { background: rgba(34,197,94,0.22); transform: rotate(12deg); }
         .header-status { display: flex; align-items: center; gap: 6px; margin-left: auto; font-size: 11.5px; color: var(--text-muted); font-family: var(--font-mono); }
         .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 2.5s ease-in-out infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.85); } }
 
+        /* ── EMPTY STATE ── */
         .empty-state {
           display: flex; flex-direction: column; align-items: center; justify-content: center;
           flex: 1; padding: 40px 24px; text-align: center;
-          animation: msgFadeIn 0.4s ease;
+          animation: msgFadeIn 0.5s cubic-bezier(0.34,1.2,0.64,1);
         }
-        .es-icon { width: 60px; height: 60px; border-radius: 18px; background: linear-gradient(135deg, #16a34a, #22c55e); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(34,197,94,0.2); margin-bottom: 24px; }
+        .es-icon {
+          width: 64px; height: 64px; border-radius: 20px;
+          background: linear-gradient(135deg, #16a34a, #22c55e);
+          display: flex; align-items: center; justify-content: center;
+          box-shadow: 0 0 36px rgba(34,197,94,0.25); margin-bottom: 24px;
+          animation: glowPulse 3s ease-in-out infinite;
+          transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .es-icon:hover { transform: scale(1.08) rotate(-4deg); }
         .es-title { font-size: 24px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; margin-bottom: 10px; }
         .es-sub { font-size: 14px; color: var(--text-muted); max-width: 420px; line-height: 1.7; margin-bottom: 28px; }
         .es-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        .es-chip { padding: 8px 16px; border-radius: 99px; border: 1px solid var(--border-strong); background: var(--bg-elevated); color: var(--text-secondary); font-size: 12.5px; cursor: pointer; transition: all 0.2s; font-family: var(--font); }
-        .es-chip:hover { border-color: rgba(34,197,94,0.35); color: var(--accent); background: var(--accent-glow); }
+        .es-chip {
+          padding: 8px 16px; border-radius: 99px; border: 1px solid var(--border-strong);
+          background: var(--bg-elevated); color: var(--text-secondary); font-size: 12.5px;
+          cursor: pointer; font-family: var(--font);
+          transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .es-chip:hover { border-color: rgba(34,197,94,0.35); color: var(--accent); background: var(--accent-glow); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(34,197,94,0.15); }
+        .es-chip:active { transform: translateY(0) scale(0.97); }
         .es-chip.img { border-color: rgba(168,85,247,0.25); color: #a855f7; background: rgba(168,85,247,0.07); }
-        .es-chip.img:hover { border-color: rgba(168,85,247,0.5); background: rgba(168,85,247,0.14); }
+        .es-chip.img:hover { border-color: rgba(168,85,247,0.5); background: rgba(168,85,247,0.14); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(168,85,247,0.18); }
 
+        /* ── CHAT ── */
         .chat-container { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 32px 20px 20px; position: relative; }
         .chat-inner { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
-        .msg-wrapper { display: flex; flex-direction: column; gap: 6px; animation: msgFadeIn 0.3s ease; }
+
+        .msg-wrapper { display: flex; flex-direction: column; gap: 6px; }
+        .msg-wrapper.bot-wrapper { animation: msgSlideInLeft 0.35s cubic-bezier(0.34,1.2,0.64,1); }
+        .msg-wrapper.user-wrapper { animation: msgSlideInRight 0.35s cubic-bezier(0.34,1.2,0.64,1); }
+
         .msg-actions { display: flex; gap: 6px; opacity: 0; transition: opacity 0.18s ease; padding-left: 48px; flex-wrap: wrap; }
         .msg-wrapper.user-wrapper .msg-actions { padding-left: 0; padding-right: 48px; justify-content: flex-end; }
         .msg-wrapper:hover .msg-actions { opacity: 1; }
-        @keyframes msgFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
         .copy-btn { display: flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-elevated); color: var(--text-muted); font-size: 11.5px; font-family: var(--font); cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
-        .copy-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .copy-btn:hover { background: var(--bg-hover); color: var(--text-primary); transform: translateY(-1px); }
         .copy-btn.copied { color: var(--accent); border-color: rgba(34,197,94,0.3); background: var(--accent-glow); }
         .gen-btn { display: flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 6px; border: 1px solid rgba(34,197,94,0.3); background: var(--accent-glow); color: var(--accent); font-size: 11.5px; font-family: var(--font); cursor: pointer; transition: all 0.2s ease; white-space: nowrap; font-weight: 500; }
         .gen-btn:hover:not(:disabled) { background: rgba(34,197,94,0.2); border-color: rgba(34,197,94,0.5); transform: translateY(-1px); box-shadow: 0 3px 10px var(--accent-glow); }
         .gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .download-btn { display: flex; align-items: center; gap: 6px; padding: 5px 13px; border-radius: 8px; border: 1px solid rgba(34,197,94,0.4); background: linear-gradient(135deg, rgba(22,163,74,0.2), rgba(34,197,94,0.1)); color: #4ade80; font-size: 12px; font-family: var(--font); font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; white-space: nowrap; }
         .download-btn:hover { background: linear-gradient(135deg, rgba(22,163,74,0.3), rgba(34,197,94,0.2)); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(34,197,94,0.3); }
-        .generated-file-bar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(20,83,45,0.3); border: 1px solid rgba(34,197,94,0.25); border-radius: 10px; margin-top: 4px; margin-left: 48px; flex-wrap: wrap; }
+        .generated-file-bar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(20,83,45,0.3); border: 1px solid rgba(34,197,94,0.25); border-radius: 10px; margin-top: 4px; margin-left: 48px; flex-wrap: wrap; animation: msgFadeIn 0.3s ease; }
         .gen-file-label { font-size: 12px; color: #86efac; font-family: var(--font); }
 
-        /* ─── AI IMAGE CARD ─── */
-        .ai-image-card { background: var(--bg-elevated); border: 1px solid rgba(168,85,247,0.25); border-radius: 18px; padding: 14px; max-width: 560px; overflow: hidden; }
+        /* ── AI IMAGE CARD ── */
+        .ai-image-card {
+          background: var(--bg-elevated); border: 1px solid rgba(168,85,247,0.25);
+          border-radius: 18px; padding: 14px; max-width: 560px; overflow: hidden;
+          transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .ai-image-card:hover { border-color: rgba(168,85,247,0.4); box-shadow: 0 8px 32px rgba(168,85,247,0.1); }
         .ai-image-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
         .ai-image-badge { display: flex; align-items: center; gap: 5px; background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.25); border-radius: 6px; padding: 3px 9px; font-size: 11px; color: #a855f7; font-weight: 600; letter-spacing: 0.3px; }
         .ai-image-prompt { font-size: 12px; color: var(--text-muted); margin-left: auto; font-style: italic; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .ai-image-img-wrap { position: relative; border-radius: 12px; overflow: hidden; background: rgba(168,85,247,0.06); min-height: 280px; display: flex; align-items: center; justify-content: center; }
-        .ai-image-img { width: 100%; border-radius: 12px; display: block; border: 1px solid rgba(255,255,255,0.05); transition: opacity 0.5s ease; }
+        .ai-image-img { width: 100%; border-radius: 12px; display: block; border: 1px solid rgba(255,255,255,0.05); transition: opacity 0.5s ease, transform 0.4s ease; }
+        .ai-image-img:hover { transform: scale(1.01); }
         .ai-image-loader { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--text-muted); font-size: 13px; background: rgba(168,85,247,0.04); pointer-events: none; }
         .ai-image-footer { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-        .ai-image-download { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.3); color: #c084fc; font-size: 12px; font-weight: 600; font-family: var(--font); text-decoration: none; transition: all 0.2s; }
-        .ai-image-download:hover { background: rgba(168,85,247,0.25); transform: translateY(-1px); }
+        .ai-image-download { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.3); color: #c084fc; font-size: 12px; font-weight: 600; font-family: var(--font); text-decoration: none; transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); }
+        .ai-image-download:hover { background: rgba(168,85,247,0.25); transform: translateY(-2px); box-shadow: 0 4px 14px rgba(168,85,247,0.25); }
         .ai-image-regen { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 8px; background: transparent; border: 1px solid var(--border-strong); color: var(--text-muted); font-size: 12px; font-family: var(--font); cursor: pointer; transition: all 0.2s; }
-        .ai-image-regen:hover:not(:disabled) { background: var(--bg-hover); color: var(--text-primary); }
+        .ai-image-regen:hover:not(:disabled) { background: var(--bg-hover); color: var(--text-primary); transform: translateY(-1px); }
         .ai-image-regen:disabled { opacity: 0.4; cursor: not-allowed; }
 
+        /* ── MESSAGE BUBBLES ── */
         .msg-row { display: flex; gap: 14px; }
         .msg-row.user { justify-content: flex-end; }
         .msg-row.assistant, .msg-row.ai_image { justify-content: flex-start; }
-        .avatar { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
-        .avatar.bot { background: linear-gradient(135deg, #16a34a, #22c55e); box-shadow: 0 0 14px var(--accent-glow); }
+        .avatar {
+          width: 34px; height: 34px; border-radius: 10px;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; margin-top: 2px;
+          animation: avatarPop 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+          transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .avatar:hover { transform: scale(1.08); }
+        .avatar.bot { background: linear-gradient(135deg, #16a34a, #22c55e); box-shadow: 0 0 14px var(--accent-glow); animation: avatarPop 0.35s cubic-bezier(0.34,1.56,0.64,1) both, glowPulse 4s ease-in-out infinite; }
         .avatar.bot-img { background: linear-gradient(135deg, #7c3aed, #a855f7); box-shadow: 0 0 14px rgba(168,85,247,0.3); }
         .avatar.user-av { background: var(--bg-elevated); border: 1px solid var(--border-strong); }
         .msg-bubble { max-width: 680px; border-radius: var(--radius-lg); line-height: 1.75; font-size: 14.5px; color: var(--text-primary); }
         .msg-bubble.bot { background: transparent; padding: 2px 0; white-space: pre-wrap; }
-        .msg-bubble.user-bubble { background: var(--bg-elevated); border: 1px solid var(--border-strong); padding: 12px 18px; border-radius: var(--radius-lg); font-size: 14px; }
-        .edit-container { display: flex; flex-direction: column; gap: 8px; max-width: 580px; width: 100%; }
+        .msg-bubble.user-bubble {
+          background: var(--bg-elevated); border: 1px solid var(--border-strong);
+          padding: 12px 18px; border-radius: var(--radius-lg); font-size: 14px;
+          transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .msg-bubble.user-bubble:hover { border-color: rgba(255,255,255,0.15); box-shadow: 0 2px 16px rgba(0,0,0,0.3); }
+
+        /* ── EDIT ── */
+        .edit-container { display: flex; flex-direction: column; gap: 8px; max-width: 580px; width: 100%; animation: msgFadeIn 0.25s ease; }
         .edit-actions { display: flex; gap: 8px; justify-content: flex-end; }
-        .inline-edit-box { background: var(--bg-base); border: 1px solid rgba(34,197,94,0.4); border-radius: var(--radius-lg); color: var(--text-primary); font-size: 14px; font-family: var(--font); padding: 10px 16px; outline: none; resize: none; width: 100%; min-height: 44px; max-height: 160px; line-height: 1.6; box-shadow: 0 0 0 3px rgba(34,197,94,0.1); }
+        .inline-edit-box { background: var(--bg-base); border: 1px solid rgba(34,197,94,0.4); border-radius: var(--radius-lg); color: var(--text-primary); font-size: 14px; font-family: var(--font); padding: 10px 16px; outline: none; resize: none; width: 100%; min-height: 44px; max-height: 160px; line-height: 1.6; box-shadow: 0 0 0 3px rgba(34,197,94,0.1); transition: box-shadow 0.2s; }
+        .inline-edit-box:focus { box-shadow: 0 0 0 4px rgba(34,197,94,0.15); }
         .edit-cancel-btn { display: flex; align-items: center; gap: 5px; padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--bg-elevated); color: var(--text-secondary); font-size: 12.5px; font-family: var(--font); cursor: pointer; transition: all 0.2s ease; }
         .edit-cancel-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
-        .edit-send-btn { display: flex; align-items: center; gap: 5px; padding: 6px 14px; border-radius: 8px; border: none; background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff; font-size: 12.5px; font-weight: 600; font-family: var(--font); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 10px var(--accent-glow-strong); }
-        .edit-send-btn:hover { transform: translateY(-1px); }
-        .thinking-row { display: flex; gap: 14px; align-items: flex-start; animation: msgFadeIn 0.3s ease; }
-        .thinking-pill { display: flex; align-items: center; gap: 12px; background: var(--bg-elevated); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 10px 16px; }
+        .edit-send-btn { display: flex; align-items: center; gap: 5px; padding: 6px 14px; border-radius: 8px; border: none; background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff; font-size: 12.5px; font-weight: 600; font-family: var(--font); cursor: pointer; transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1); box-shadow: 0 2px 10px var(--accent-glow-strong); }
+        .edit-send-btn:hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 4px 18px rgba(34,197,94,0.35); }
+
+        /* ── THINKING ── */
+        .thinking-row { display: flex; gap: 14px; align-items: flex-start; animation: thinkingSlide 0.3s ease; }
+        .thinking-pill { display: flex; align-items: center; gap: 12px; background: var(--bg-elevated); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 10px 16px; position: relative; overflow: hidden; }
+        .thinking-pill::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 0%, rgba(34,197,94,0.05) 50%, transparent 100%); background-size: 200% 100%; animation: shimmer 2s linear infinite; }
         .thinking-pill.image-thinking { border-color: rgba(168,85,247,0.3); background: rgba(168,85,247,0.08); }
+        .thinking-pill.image-thinking::after { background: linear-gradient(90deg, transparent 0%, rgba(168,85,247,0.06) 50%, transparent 100%); background-size: 200% 100%; animation: shimmer 2s linear infinite; }
         .thinking-dots { display: flex; gap: 4px; align-items: center; }
         .thinking-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: bounce 1.2s ease infinite; }
         .thinking-pill.image-thinking .thinking-dot { background: #a855f7; }
         .thinking-dot:nth-child(2) { animation-delay: 0.18s; }
         .thinking-dot:nth-child(3) { animation-delay: 0.36s; }
-        @keyframes bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.5; } 40% { transform: translateY(-5px); opacity: 1; } }
-        .thinking-label { font-size: 12.5px; color: var(--accent); font-weight: 500; font-family: var(--font-mono); }
+        .thinking-label { font-size: 12.5px; color: var(--accent); font-weight: 500; font-family: var(--font-mono); animation: thinkingSlide 0.3s ease; }
         .thinking-pill.image-thinking .thinking-label { color: #a855f7; }
-        .scroll-btn { position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--bg-elevated); border: 1px solid var(--border-strong); color: var(--text-secondary); border-radius: 99px; padding: 8px 16px; font-size: 12.5px; display: flex; align-items: center; gap: 6px; cursor: pointer; z-index: 10; transition: all 0.2s; backdrop-filter: blur(8px); font-family: var(--font); }
-        .scroll-btn:hover { background: var(--bg-hover); color: var(--text-primary); transform: translateX(-50%) translateY(-2px); }
 
+        /* ── SCROLL BTN ── */
+        .scroll-btn {
+          position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%);
+          background: var(--bg-elevated); border: 1px solid var(--border-strong);
+          color: var(--text-secondary); border-radius: 99px; padding: 8px 16px;
+          font-size: 12.5px; display: flex; align-items: center; gap: 6px;
+          cursor: pointer; z-index: 10; backdrop-filter: blur(8px); font-family: var(--font);
+          transition: all 0.2s; animation: scrollBtnBounce 2s ease-in-out infinite;
+        }
+        .scroll-btn:hover { background: var(--bg-hover); color: var(--text-primary); animation: none; transform: translateX(-50%) translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+
+        /* ── INPUT AREA ── */
         .input-area { border-top: 1px solid var(--border); background: var(--bg-surface); padding: 14px 20px 18px; flex-shrink: 0; }
         .input-inner { max-width: 760px; margin: 0 auto; }
-        .input-box { display: flex; align-items: flex-end; gap: 10px; background: var(--bg-elevated); border: 1px solid var(--border-strong); border-radius: var(--radius-xl); padding: 12px 14px; transition: border-color 0.2s, box-shadow 0.2s; }
-        .input-box:focus-within { border-color: rgba(34,197,94,0.35); box-shadow: 0 0 0 3px rgba(34,197,94,0.08); }
-        .input-action-btn { width: 32px; height: 32px; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
-        .input-action-btn:hover:not(:disabled) { background: rgba(255,255,255,0.06); color: var(--text-primary); }
-        .input-action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .input-textarea { flex: 1; background: transparent; border: none; outline: none; color: var(--text-primary); font-size: 14.5px; line-height: 1.6; resize: none; min-height: 26px; max-height: 160px; font-family: var(--font); padding: 4px 2px; }
+        .input-box {
+          display: flex; align-items: flex-end; gap: 10px;
+          background: var(--bg-elevated); border: 1px solid var(--border-strong);
+          border-radius: var(--radius-xl); padding: 12px 14px;
+          transition: border-color 0.25s, box-shadow 0.25s, transform 0.15s;
+        }
+        .input-box:focus-within {
+          border-color: rgba(34,197,94,0.4);
+          box-shadow: 0 0 0 4px rgba(34,197,94,0.09), 0 4px 24px rgba(0,0,0,0.3);
+          transform: translateY(-1px);
+        }
+        .input-textarea {
+          flex: 1; background: transparent; border: none; outline: none;
+          color: var(--text-primary); font-size: 14.5px; line-height: 1.6;
+          resize: none; min-height: 26px; max-height: 160px;
+          font-family: var(--font); padding: 4px 2px;
+        }
         .input-textarea::placeholder { color: var(--text-muted); }
-        .send-btn { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #16a34a, #22c55e); border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; box-shadow: 0 2px 12px var(--accent-glow-strong); }
-        .send-btn:hover:not(:disabled) { transform: scale(1.08); box-shadow: 0 4px 18px rgba(34,197,94,0.4); }
-        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .input-footer { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; font-size: 11px; color: var(--text-muted); }
-        .file-chip-row { margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
-        .file-chip { display: flex; align-items: center; gap: 7px; background: var(--bg-elevated); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 6px 10px; font-size: 12.5px; color: var(--text-secondary); font-family: var(--font); }
-        .file-chip.error { border-color: rgba(239,68,68,0.3); color: #ef4444; background: rgba(239,68,68,0.05); }
-        .file-chip-ready { color: var(--accent); font-size: 11px; font-weight: 600; }
-        .file-chip-remove { background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; padding: 0; margin-left: 2px; transition: color 0.15s; }
-        .file-chip-remove:hover { color: #ef4444; }
 
+        /* ── SEND BUTTON ── */
+        .send-btn {
+          width: 38px; height: 38px; border-radius: 11px;
+          background: linear-gradient(135deg, #16a34a, #22c55e);
+          border: none; color: #fff; cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); flex-shrink: 0;
+          box-shadow: 0 2px 12px var(--accent-glow-strong);
+          position: relative; overflow: hidden;
+        }
+        .send-btn::before {
+          content: ''; position: absolute; inset: 0; border-radius: inherit;
+          background: rgba(255,255,255,0.15); opacity: 0;
+          transition: opacity 0.2s;
+        }
+        .send-btn:hover:not(:disabled) { transform: scale(1.1) rotate(-8deg); box-shadow: 0 6px 22px rgba(34,197,94,0.45); }
+        .send-btn:hover:not(:disabled)::before { opacity: 1; }
+        .send-btn:active:not(:disabled) { animation: sendPop 0.3s ease; }
+        .send-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .input-footer { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; font-size: 11px; color: var(--text-muted); }
+
+        .mobile-close-btn {
+          display: none; margin-left: auto;
+          width: 28px; height: 28px; border-radius: 7px;
+          border: 1px solid var(--border-strong); background: transparent;
+          color: var(--text-muted); cursor: pointer;
+          align-items: center; justify-content: center; flex-shrink: 0;
+          transition: background 0.18s, color 0.18s, transform 0.18s;
+        }
+        .mobile-close-btn:hover { background: rgba(239,68,68,0.12); color: #ef4444; transform: scale(1.08); border-color: rgba(239,68,68,0.25); }
         @media (max-width: 768px) {
           .sidebar { position: absolute; top: 0; left: 0; height: 100%; z-index: 50; box-shadow: 4px 0 30px rgba(0,0,0,0.5); }
+          .mobile-close-btn { display: flex; }
+          .logo-badge { display: none; }
           .es-title { font-size: 20px; }
           .es-chips { display: none; }
         }
-
-        
+        @media (prefers-reduced-motion: reduce) {
+          *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
       `}</style>
 
       {/* INTRO OVERLAY */}
@@ -910,27 +987,24 @@ export default function Home() {
         {/* SIDEBAR */}
         <aside className={`sidebar${sidebarOpen ? "" : " closed"}`}>
           <div className="sidebar-inner">
-
-          <button
-            className="mobile-close-btn"
-            onClick={() => setSidebarOpen(false)}
-          >
-            ✕
-          </button>
             <div className="sidebar-logo">
               <div className="logo-icon"><Scale size={18} color="#fff" /></div>
               <span className="logo-text">LandResolve</span>
               <span className="logo-badge">AI</span>
+              <button className="mobile-close-btn" onClick={() => setSidebarOpen(false)}>
+                <X size={14} />
+              </button>
             </div>
             <button className="new-chat-btn" onClick={handleNewChat}>
               <Plus size={16} /> New Conversation
             </button>
             {conversations.length > 0 && <p className="conv-section-label">Recent chats</p>}
             <div className="conv-list">
-              {conversations.map((chat) => (
+              {conversations.map((chat, idx) => (
                 <div
                   key={chat.id}
                   className={`conv-item${currentConversationId === chat.id ? " active" : ""}`}
+                  style={{ animationDelay: `${idx * 40}ms` }}
                   onClick={() => loadConversation(chat.id)}
                   onMouseEnter={() => setHoveredConv(chat.id)}
                   onMouseLeave={() => setHoveredConv(null)}
@@ -1014,7 +1088,7 @@ export default function Home() {
                     const parsed = (() => { try { return JSON.parse(msg.content); } catch { return null; } })();
                     if (!parsed) return null;
                     return (
-                      <div key={index} className="msg-wrapper">
+                      <div key={index} className="msg-wrapper bot-wrapper">
                         <div className="msg-row ai_image">
                           <div className="avatar bot-img">
                             <Wand2 size={17} color="#fff" />
@@ -1024,25 +1098,12 @@ export default function Home() {
                               <div className="ai-image-badge"><Wand2 size={10} /> AI Generated</div>
                               <span className="ai-image-prompt">{parsed.prompt}</span>
                             </div>
-
-                            {/* ✅ FIXED AIImage component with loading + error states */}
                             <AIImage url={parsed.url} prompt={parsed.prompt} />
-
                             <div className="ai-image-footer">
-                              <a
-                                className="ai-image-download"
-                                href={parsed.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                download
-                              >
+                              <a className="ai-image-download" href={parsed.url} target="_blank" rel="noopener noreferrer" download>
                                 <Download size={13} /> Download
                               </a>
-                              <button
-                                className="ai-image-regen"
-                                onClick={() => handleAIImageGenerate(`generate image of ${parsed.prompt}`)}
-                                disabled={isLoading}
-                              >
+                              <button className="ai-image-regen" onClick={() => handleAIImageGenerate(`generate image of ${parsed.prompt}`)} disabled={isLoading}>
                                 <Wand2 size={12} /> Regenerate
                               </button>
                               <span style={{ fontSize: "11px", color: "var(--text-muted)", marginLeft: "auto" }}>
@@ -1059,7 +1120,7 @@ export default function Home() {
                   return (
                     <div
                       key={index}
-                      className={`msg-wrapper${msg.role === "user" ? " user-wrapper" : ""}`}
+                      className={`msg-wrapper${msg.role === "user" ? " user-wrapper" : " bot-wrapper"}`}
                       onMouseEnter={() => setHoveredMsgIndex(index)}
                       onMouseLeave={() => setHoveredMsgIndex(null)}
                     >
@@ -1067,13 +1128,7 @@ export default function Home() {
                         {msg.role === "assistant" && (
                           <>
                             <div className="avatar bot"><Bot size={17} color="#fff" /></div>
-                            <div
-                              className="msg-bubble bot"
-                              style={{
-                                color: index === 0 ? "var(--text-muted)" : "var(--text-primary)",
-                                fontSize: index === 0 ? "13.5px" : undefined,
-                              }}
-                            >
+                            <div className="msg-bubble bot" style={{ color: index === 0 ? "var(--text-muted)" : "var(--text-primary)", fontSize: index === 0 ? "13.5px" : undefined }}>
                               {msg.content}
                             </div>
                           </>
@@ -1126,11 +1181,11 @@ export default function Home() {
                           {msg.role === "assistant" && index > 0 && (
                             <>
                               <button className="gen-btn" disabled={generatingIndex === index || isLoading} onClick={() => handleGenerate("pdf", index)}>
-                                {generatingIndex === index ? <Loader2 size={12} /> : <FileDown size={12} />}
+                                {generatingIndex === index ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : <FileDown size={12} />}
                                 {generatingIndex === index ? "Generating..." : "PDF"}
                               </button>
                               <button className="gen-btn" disabled={generatingIndex === index || isLoading} onClick={() => handleGenerate("image", index)}>
-                                {generatingIndex === index ? <Loader2 size={12} /> : <ImageLucide size={12} />}
+                                {generatingIndex === index ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : <ImageLucide size={12} />}
                                 {generatingIndex === index ? "Generating..." : "Image"}
                               </button>
                             </>
@@ -1153,7 +1208,7 @@ export default function Home() {
                       <div className="thinking-dots">
                         <div className="thinking-dot" /><div className="thinking-dot" /><div className="thinking-dot" />
                       </div>
-                      <span className="thinking-label">{currentThinkingSteps[thinkingStep]}</span>
+                      <span className="thinking-label" key={thinkingStep}>{currentThinkingSteps[thinkingStep]}</span>
                     </div>
                   </div>
                 )}
@@ -1168,33 +1223,14 @@ export default function Home() {
             </button>
           )}
 
-          {/* DOCKED INPUT BAR */}
+          {/* INPUT BAR — mic and upload buttons removed */}
           <div className="input-area">
             <div className="input-inner">
-              {(uploadedFile || uploadError) && (
-                <div className="file-chip-row">
-                  {uploadedFile && !uploadError && (
-                    <div className="file-chip">
-                      {uploadedFile.name.endsWith(".pdf") ? <FileText size={13} /> : <ImageIcon size={13} />}
-                      <span>{uploadedFile.name}</span>
-                      <span className="file-chip-ready">✓ Ready</span>
-                      <button className="file-chip-remove" onClick={clearUpload}><X size={11} /></button>
-                    </div>
-                  )}
-                  {uploadError && (
-                    <div className="file-chip error"><X size={13} /><span>{uploadError}</span></div>
-                  )}
-                </div>
-              )}
-              <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" style={{ display: "none" }} onChange={handleFileUpload} />
               <div className="input-box">
-                <button className="input-action-btn" disabled={isLoading || isUploading} onClick={() => fileInputRef.current?.click()} title="Upload PDF or Image">
-                  {isUploading ? <span style={{ fontSize: 10, color: "var(--accent)" }}>...</span> : <Paperclip size={16} />}
-                </button>
                 <textarea
                   ref={textareaRef}
                   className="input-textarea"
-                  placeholder={isLoading ? "AI is working..." : 'Ask about land law !"'}
+                  placeholder={isLoading ? "AI is working..." : "Ask about land law..."}
                   value={input}
                   disabled={isLoading}
                   rows={1}
@@ -1203,8 +1239,9 @@ export default function Home() {
                     if (e.key === "Enter" && !e.shiftKey && !isLoading) { e.preventDefault(); handleSend(); }
                   }}
                 />
-                <button className="input-action-btn" disabled={isLoading}><Mic size={16} /></button>
-                <button className="send-btn" onClick={handleSend} disabled={isLoading || !input.trim()}><Send size={15} /></button>
+                <button className="send-btn" onClick={handleSend} disabled={isLoading || !input.trim()}>
+                  <Send size={15} />
+                </button>
               </div>
               <div className="input-footer">
                 <Sparkles size={10} />
