@@ -158,13 +158,6 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const savedId = localStorage.getItem("conversation_id");
-    if (savedId) {
-      const id = Number(savedId);
-      conversationIdRef.current = id;
-      setCurrentConversationId(id);
-      setHasFirstMessage(true);
-    }
     fetchConversations();
   }, []);
 
@@ -1065,16 +1058,24 @@ export default function Home() {
           {!hasFirstMessage ? (
             <div className="empty-state">
               <div className="es-icon"><Scale size={28} color="#fff" /></div>
-              <div className="es-title">What legal matter can I help with?</div>
+              <div className="es-title"> AI Legal Land Assistant</div>
               <div className="es-sub">
-                Ask about land disputes, property rights, boundary conflicts, tenant laws — or generate AI images.
+                Describe your land dispute, property issue, or legal concern in simple language and receive AI-powered guidance.
               </div>
+
               <div className="es-chips">
-                {["Boundary dispute help", "Property ownership rights", "Tenant eviction laws"].map((s) => (
-                  <button key={s} className="es-chip" onClick={() => setInput(s)}>{s}</button>
-                ))}
-                {["Farmer in green fields", "Land survey map", "Courtroom scene"].map((s) => (
-                  <button key={s} className="es-chip img" onClick={() => setInput(`generate image of a ${s.toLowerCase()}`)}>🎨 {s}</button>
+                {[
+                  "Boundary Dispute",
+                  "Property Rights",
+                  "Land Registration"
+                ].map((s) => (
+                  <button
+                    key={s}
+                    className="es-chip"
+                    onClick={() => setInput(s)}
+                  >
+                    {s}
+                  </button>
                 ))}
               </div>
             </div>
@@ -1161,15 +1162,7 @@ export default function Home() {
                         )}
                       </div>
 
-                      {msg.role === "assistant" && generatedFiles[index] && (
-                        <div className="generated-file-bar">
-                          {generatedFiles[index].format === "pdf" ? <FileDown size={15} color="#4ade80" /> : <ImageLucide size={15} color="#4ade80" />}
-                          <span className="gen-file-label">{generatedFiles[index].format === "pdf" ? "PDF ready" : "Image ready"} —</span>
-                          <a className="download-btn" href={generatedFiles[index].url} target="_blank" rel="noopener noreferrer" download>
-                            <Download size={13} /> Download {generatedFiles[index].format === "pdf" ? "PDF" : "Image"}
-                          </a>
-                        </div>
-                      )}
+                      
 
                       {editingMsgIndex !== index && (
                         <div className="msg-actions" style={{ opacity: hoveredMsgIndex === index ? 1 : 0 }}>
@@ -1178,18 +1171,7 @@ export default function Home() {
                               <Pencil size={12} /> Edit
                             </button>
                           )}
-                          {msg.role === "assistant" && index > 0 && (
-                            <>
-                              <button className="gen-btn" disabled={generatingIndex === index || isLoading} onClick={() => handleGenerate("pdf", index)}>
-                                {generatingIndex === index ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : <FileDown size={12} />}
-                                {generatingIndex === index ? "Generating..." : "PDF"}
-                              </button>
-                              <button className="gen-btn" disabled={generatingIndex === index || isLoading} onClick={() => handleGenerate("image", index)}>
-                                {generatingIndex === index ? <Loader2 size={12} style={{ animation: "spin 1s linear infinite" }} /> : <ImageLucide size={12} />}
-                                {generatingIndex === index ? "Generating..." : "Image"}
-                              </button>
-                            </>
-                          )}
+                          
                           <button className={`copy-btn${copiedIndex === index ? " copied" : ""}`} onClick={() => handleCopy(msg.content, index)}>
                             {copiedIndex === index ? <><Check size={12} /> Copied!</> : <><Copy size={12} /> Copy</>}
                           </button>
@@ -1230,7 +1212,7 @@ export default function Home() {
                 <textarea
                   ref={textareaRef}
                   className="input-textarea"
-                  placeholder={isLoading ? "AI is working..." : "Ask about land law..."}
+                  placeholder={isLoading ? "AI is working..." : "Describe your land dispute..."}
                   value={input}
                   disabled={isLoading}
                   rows={1}
