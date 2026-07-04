@@ -374,12 +374,19 @@ export default function Home() {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    if (window.innerWidth <= 768) {
-      setSidebarOpen(false);
-    }
+    const checkMobile = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      if (mobile) setSidebarOpen(false);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
   const [hoveredConv, setHoveredConv] = useState<string | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [renamingId, setRenamingId] = useState<string | null>(null);
@@ -2035,11 +2042,8 @@ export default function Home() {
 
       <div className="app-shell">
 
-        {sidebarOpen && window.innerWidth <= 768 && (
-          <div
-            className="mobile-overlay"
-            onClick={() => setSidebarOpen(false)}
-          />
+        {sidebarOpen && isMobile && (
+          <div className="mobile-overlay" onClick={() => setSidebarOpen(false)} />
         )}
 
         {/* SIDEBAR */}
@@ -2826,12 +2830,10 @@ export default function Home() {
 
         </section>
       </div>
-      {toast && !(sidebarOpen && window.innerWidth <= 768) && (
+      {toast && !(sidebarOpen && isMobile) && (
         <div
           className="toast-message"
-          style={{
-            left: `calc(50% + ${sidebarOpen ? 140 : 35}px)`,
-          }}
+          style={{ left: `calc(50% + ${sidebarOpen ? 140 : 35}px)` }}
         >
           {toast}
         </div>
