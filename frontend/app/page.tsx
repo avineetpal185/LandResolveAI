@@ -1921,7 +1921,7 @@ export default function Home() {
         width: 75vw;
         max-width: 320px;
 
-        height: 100vh;
+        height: 100dvh;
 
         z-index: 10000;
 
@@ -1984,6 +1984,8 @@ export default function Home() {
         display: flex;
         flex-direction: column;
         height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
         }
         .conv-list {
         flex: 1;
