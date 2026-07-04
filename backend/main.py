@@ -1190,9 +1190,12 @@ async def extract_text(file: UploadFile = File(...)):
                     (int(width * scale), int(height * scale)), resample
                 )
             try:
-                extracted_text = pytesseract.image_to_string(image, lang="eng+hin")
+                extracted_text = pytesseract.image_to_string(image, lang="eng+pan+hin")
             except Exception:
-                extracted_text = pytesseract.image_to_string(image, lang="eng")
+                try:
+                    extracted_text = pytesseract.image_to_string(image, lang="eng+hin")
+                except Exception:
+                    extracted_text = pytesseract.image_to_string(image, lang="eng")
 
         elif filename.endswith(".pdf"):
             with pdfplumber.open(io.BytesIO(contents)) as pdf:
