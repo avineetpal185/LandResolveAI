@@ -20,7 +20,7 @@ export default function GoogleLoginButton({ setUser }: any) {
           picture: userInfo.picture,
         });
         const response = await fetch(
-          "http://localhost:8000/auth/google",
+          "https://landresolveai.onrender.com/auth/google",
           {
             method: "POST",
             headers: {
