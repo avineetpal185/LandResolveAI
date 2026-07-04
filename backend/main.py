@@ -600,6 +600,8 @@ async def save_google_user(user: GoogleUserRequest):
         User.email == user.email
     ).first()
 
+    is_new = False
+
     if not existing_user:
 
         new_user = User(
@@ -614,6 +616,7 @@ async def save_google_user(user: GoogleUserRequest):
         db.refresh(new_user)
 
         existing_user = new_user
+        is_new = True
 
     db.close()
 
@@ -621,8 +624,10 @@ async def save_google_user(user: GoogleUserRequest):
         "id": existing_user.id,
         "name": existing_user.name,
         "email": existing_user.email,
-        "picture": existing_user.picture
+        "picture": existing_user.picture,
+        "is_new": is_new
     }
+    
 
 @app.post("/chat")
 async def chat(request: ChatRequest):

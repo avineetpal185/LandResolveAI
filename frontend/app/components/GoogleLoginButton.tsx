@@ -13,49 +13,62 @@ declare global {
   }
 }
 
+async function handleLoginResponse(userData: any, setUser: any) {
+  window.dispatchEvent(
+    new CustomEvent("show-toast", {
+      detail: `⏳ Signing you in...`,
+    })
+  );
+
+  try {
+    const response = await fetch(
+      "https://landresolveai.onrender.com/auth/google",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      }
+    );
+
+    if (!response.ok) throw new Error(`Backend returned ${response.status}`);
+
+    const dbUser = await response.json();
+
+    if (dbUser.is_new) {
+      window.dispatchEvent(
+        new CustomEvent("show-toast", {
+          detail: `✅ Account created! Tap Sign in again to continue.`,
+        })
+      );
+      return;
+    }
+
+    setUser(dbUser);
+    localStorage.setItem("landresolve_user", JSON.stringify(dbUser));
+
+    window.dispatchEvent(
+      new CustomEvent("show-toast", {
+        detail: `✅ Welcome back ${dbUser.name}`,
+      })
+    );
+  } catch (err) {
+    console.error("Google login backend error:", err);
+    window.dispatchEvent(
+      new CustomEvent("show-toast", {
+        detail: `⚠️ Login failed. Try again.`,
+      })
+    );
+  }
+}
+
 export default function GoogleLoginButton({ setUser }: any) {
   const [isSigningIn, setIsSigningIn] = useState(false);
 
   useEffect(() => {
     window.onNativeGoogleSignIn = async (userData: any) => {
       setIsSigningIn(true);
-      window.dispatchEvent(
-        new CustomEvent("show-toast", {
-          detail: `⏳ Signing you in...`,
-        })
-      );
-
-      try {
-        const response = await fetch(
-          "https://landresolveai.onrender.com/auth/google",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(userData),
-          }
-        );
-
-        if (!response.ok) throw new Error(`Backend returned ${response.status}`);
-
-        const dbUser = await response.json();
-        setUser(dbUser);
-        localStorage.setItem("landresolve_user", JSON.stringify(dbUser));
-
-        window.dispatchEvent(
-          new CustomEvent("show-toast", {
-            detail: `✅ Welcome ${dbUser.name}`,
-          })
-        );
-      } catch (err) {
-        console.error("Native Google login error:", err);
-        window.dispatchEvent(
-          new CustomEvent("show-toast", {
-            detail: `⚠️ Login failed. Try again.`,
-          })
-        );
-      } finally {
-        setIsSigningIn(false);
-      }
+      await handleLoginResponse(userData, setUser);
+      setIsSigningIn(false);
     };
 
     return () => {
@@ -97,11 +110,6 @@ export default function GoogleLoginButton({ setUser }: any) {
         if (!credentialResponse.credential) return;
 
         setIsSigningIn(true);
-        window.dispatchEvent(
-          new CustomEvent("show-toast", {
-            detail: `⏳ Signing you in...`,
-          })
-        );
 
         const userInfo: any = jwtDecode(credentialResponse.credential);
 
@@ -111,37 +119,8 @@ export default function GoogleLoginButton({ setUser }: any) {
           picture: userInfo.picture,
         };
 
-        try {
-          const response = await fetch(
-            "https://landresolveai.onrender.com/auth/google",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(userData),
-            }
-          );
-
-          if (!response.ok) throw new Error(`Backend returned ${response.status}`);
-
-          const dbUser = await response.json();
-          setUser(dbUser);
-          localStorage.setItem("landresolve_user", JSON.stringify(dbUser));
-
-          window.dispatchEvent(
-            new CustomEvent("show-toast", {
-              detail: `✅ Welcome ${dbUser.name}`,
-            })
-          );
-        } catch (err) {
-          console.error("Google login backend error:", err);
-          window.dispatchEvent(
-            new CustomEvent("show-toast", {
-              detail: `⚠️ Login failed. Try again.`,
-            })
-          );
-        } finally {
-          setIsSigningIn(false);
-        }
+        await handleLoginResponse(userData, setUser);
+        setIsSigningIn(false);
       }}
       onError={() => {
         console.log("Login Failed");
