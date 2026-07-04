@@ -549,7 +549,7 @@ export default function Home() {
       if (!user?.id) return;
 
       const res = await fetch(
-        `http://localhost:8000/conversations?user_id=${user.id}`
+        `https://landresolveai.onrender.com/conversations?user_id=${user.id}`
       );
 
       const data = await res.json();
@@ -566,7 +566,7 @@ export default function Home() {
 
   const loadConversation = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:8000/conversations/${id}`);
+      const res = await fetch(`https://landresolveai.onrender.com/conversations/${id}`);
       const data = await res.json();
       console.log(JSON.stringify(data, null, 2));
       setMessages(data);
@@ -603,7 +603,7 @@ export default function Home() {
   const submitRename = async (id: string) => {
     if (!renameValue.trim()) { setRenamingId(null); return; }
     try {
-      await fetch(`http://localhost:8000/conversations/${id}`, {
+      await fetch(`https://landresolveai.onrender.com/conversations/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: renameValue.trim() }),
@@ -617,7 +617,7 @@ export default function Home() {
     e.stopPropagation();
     if (!confirm("Delete this conversation?")) return;
     try {
-      await fetch(`http://localhost:8000/conversations/${id}`, { method: "DELETE" });
+      await fetch(`https://landresolveai.onrender.com/conversations/${id}`, { method: "DELETE" });
       if (currentConversationId === id) handleNewChat();
       fetchConversations();
     } catch (err) { console.log(err); }
@@ -638,7 +638,7 @@ export default function Home() {
     if (!targetMsg) return;
     setGeneratingIndex(targetMsgIndex);
     try {
-      const res = await fetch("http://localhost:8000/generate", {
+      const res = await fetch("https://landresolveai.onrender.com/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -653,7 +653,7 @@ export default function Home() {
       } else {
         setGeneratedFiles((prev) => ({
           ...prev,
-          [targetMsgIndex]: { url: `http://localhost:8000${data.url}`, format: data.format },
+          [targetMsgIndex]: { url: `https://landresolveai.onrender.com${data.url}`, format: data.format },
         }));
       }
     } catch (err) {
@@ -724,7 +724,7 @@ export default function Home() {
         : null;
 
       console.log("STEP 4 FETCH");
-      const res = await fetch("http://localhost:8000/generate-ai-image", {
+      const res = await fetch("https://landresolveai.onrender.com/generate-ai-image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
 
@@ -756,7 +756,7 @@ export default function Home() {
 
         await fetchConversations();
       } else {
-        const imageUrl = `http://localhost:8000${data.url}`;
+        const imageUrl = `https://landresolveai.onrender.com${data.url}`;
         const imgMsg: Message = {
           role: "ai_image",
           content: JSON.stringify({
@@ -822,7 +822,7 @@ export default function Home() {
       console.log("conversationIdToSend =", conversationIdToSend);
 
       const response = await fetch(
-        "http://localhost:8000/chat",
+        "https://landresolveai.onrender.com/chat",
         {
           method: "POST",
           headers: {
@@ -1134,7 +1134,7 @@ export default function Home() {
         ? JSON.parse(savedUser)
         : null;
 
-      const response = await fetch("http://localhost:8000/chat", {
+      const response = await fetch("https://landresolveai.onrender.com/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
 
@@ -1235,7 +1235,7 @@ export default function Home() {
       console.log("CALLING EXTRACT API");
 
       const response = await fetch(
-        "http://localhost:8000/extract-text",
+        "https://landresolveai.onrender.com/extract-text",
         {
           method: "POST",
           body: formData,
@@ -2442,7 +2442,7 @@ export default function Home() {
                               )}
 
                               <img
-                                src={`http://localhost:8000${parsed.url}`}
+                                src={`https://landresolveai.onrender.com${parsed.url}`}
                                 alt="Educational Document"
                                 style={{
                                   width: "100%",
@@ -2451,7 +2451,7 @@ export default function Home() {
                                   cursor: "pointer",
                                 }}
                                 onClick={() =>
-                                  setPreviewImage(`http://localhost:8000${parsed.url}`)
+                                  setPreviewImage(`https://landresolveai.onrender.com${parsed.url}`)
                                 }
                               />
 
@@ -2481,7 +2481,7 @@ export default function Home() {
                               url={
                                 parsed.url.startsWith("http")
                                   ? parsed.url
-                                  : `http://localhost:8000${parsed.url}`
+                                  : `https://landresolveai.onrender.com${parsed.url}`
                               }
                               prompt={parsed.prompt}
                               onPreview={setPreviewImage}
@@ -2494,7 +2494,7 @@ export default function Home() {
                                   handleDownload(
                                     parsed.url.startsWith("http")
                                       ? parsed.url
-                                      : `http://localhost:8000${parsed.url}`
+                                      : `https://landresolveai.onrender.com${parsed.url}`
                                   )
                                 }
                               >
