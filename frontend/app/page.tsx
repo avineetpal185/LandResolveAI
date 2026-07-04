@@ -2281,6 +2281,9 @@ export default function Home() {
                           setTimeout(() => {
                             setToast("");
                           }, 2500);
+                          if (typeof window !== "undefined" && (window as any).AndroidBridge?.logout) {
+                            (window as any).AndroidBridge.logout();
+                          }
                         }}
                       >
                         Logout
