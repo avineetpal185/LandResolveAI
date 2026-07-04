@@ -2,7 +2,7 @@
 
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 declare global {
   interface Window {
@@ -14,8 +14,17 @@ declare global {
 }
 
 export default function GoogleLoginButton({ setUser }: any) {
+  const [isSigningIn, setIsSigningIn] = useState(false);
+
   useEffect(() => {
     window.onNativeGoogleSignIn = async (userData: any) => {
+      setIsSigningIn(true);
+      window.dispatchEvent(
+        new CustomEvent("show-toast", {
+          detail: `⏳ Signing you in...`,
+        })
+      );
+
       try {
         const response = await fetch(
           "https://landresolveai.onrender.com/auth/google",
@@ -34,7 +43,7 @@ export default function GoogleLoginButton({ setUser }: any) {
 
         window.dispatchEvent(
           new CustomEvent("show-toast", {
-            detail: `✅ Welcome back ${dbUser.name}`,
+            detail: `✅ Welcome ${dbUser.name}`,
           })
         );
       } catch (err) {
@@ -44,6 +53,8 @@ export default function GoogleLoginButton({ setUser }: any) {
             detail: `⚠️ Login failed. Try again.`,
           })
         );
+      } finally {
+        setIsSigningIn(false);
       }
     };
 
@@ -55,7 +66,11 @@ export default function GoogleLoginButton({ setUser }: any) {
   if (typeof window !== "undefined" && window.AndroidBridge) {
     return (
       <button
-        onClick={() => window.AndroidBridge?.triggerGoogleSignIn()}
+        disabled={isSigningIn}
+        onClick={() => {
+          if (isSigningIn) return;
+          window.AndroidBridge?.triggerGoogleSignIn();
+        }}
         style={{
           display: "flex",
           alignItems: "center",
@@ -63,14 +78,15 @@ export default function GoogleLoginButton({ setUser }: any) {
           padding: "8px 16px",
           borderRadius: "8px",
           border: "1px solid #444",
-          background: "#fff",
+          background: isSigningIn ? "#ccc" : "#fff",
           color: "#333",
           fontWeight: 600,
           fontSize: "13px",
-          cursor: "pointer",
+          cursor: isSigningIn ? "not-allowed" : "pointer",
+          opacity: isSigningIn ? 0.6 : 1,
         }}
       >
-        Sign in with Google
+        {isSigningIn ? "Signing in..." : "Sign in with Google"}
       </button>
     );
   }
@@ -79,6 +95,13 @@ export default function GoogleLoginButton({ setUser }: any) {
     <GoogleLogin
       onSuccess={async (credentialResponse) => {
         if (!credentialResponse.credential) return;
+
+        setIsSigningIn(true);
+        window.dispatchEvent(
+          new CustomEvent("show-toast", {
+            detail: `⏳ Signing you in...`,
+          })
+        );
 
         const userInfo: any = jwtDecode(credentialResponse.credential);
 
@@ -106,7 +129,7 @@ export default function GoogleLoginButton({ setUser }: any) {
 
           window.dispatchEvent(
             new CustomEvent("show-toast", {
-              detail: `✅ Welcome back ${dbUser.name}`,
+              detail: `✅ Welcome ${dbUser.name}`,
             })
           );
         } catch (err) {
@@ -116,6 +139,8 @@ export default function GoogleLoginButton({ setUser }: any) {
               detail: `⚠️ Login failed. Try again.`,
             })
           );
+        } finally {
+          setIsSigningIn(false);
         }
       }}
       onError={() => {
