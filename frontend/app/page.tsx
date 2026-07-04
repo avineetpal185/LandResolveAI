@@ -285,6 +285,8 @@ export default function Home() {
   const streamRef = useRef<MediaStream | null>(null);
   const animationRef = useRef<number | null>(null);
   const [showAttachMenu, setShowAttachMenu] = useState(false);
+  const [showGuestBanner, setShowGuestBanner] = useState(false);
+  const guestPromptShownRef = useRef(false);
   const attachMenuRef = useRef<HTMLDivElement | null>(null);
 
 
@@ -367,6 +369,9 @@ export default function Home() {
     if (user) {
       fetchConversations();
     }
+  }, [user]);
+  useEffect(() => {
+    if (user) setShowGuestBanner(false);
   }, [user]);
   const [showThinking, setShowThinking] = useState(false);
   const [isAIImageThinking, setIsAIImageThinking] = useState(false);
@@ -1051,6 +1056,11 @@ export default function Home() {
     const currentInput = input.trim();
     setInput("");
     setHasFirstMessage(true);
+
+    if (!user && !guestPromptShownRef.current) {
+      guestPromptShownRef.current = true;
+      setTimeout(() => setShowGuestBanner(true), 1200);
+    }
 
 
     const genIntent = detectGenerateIntent(currentInput);
@@ -2334,6 +2344,43 @@ export default function Home() {
 
 
           </header>
+
+          {showGuestBanner && !user && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                padding: "10px 20px",
+                background: "rgba(34,197,94,0.08)",
+                borderBottom: "1px solid rgba(34,197,94,0.2)",
+                flexShrink: 0,
+                flexWrap: "wrap",
+              }}
+            >
+              <span style={{ fontSize: "13px", color: "#cbd5e1" }}>
+                💡 You're chatting as a guest — sign in to save this conversation and access it later.
+              </span>
+
+              <div style={{ transform: "scale(0.75)", transformOrigin: "left center" }}>
+                <GoogleLoginButton setUser={setUser} setShowWelcomeModal={setWelcomeModalName} />
+              </div>
+
+              <button
+                onClick={() => setShowGuestBanner(false)}
+                style={{
+                  marginLeft: "auto",
+                  background: "transparent",
+                  border: "none",
+                  color: "#8b8b9e",
+                  cursor: "pointer",
+                  fontSize: "16px",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
 
 
           {!currentConversationId ? (
