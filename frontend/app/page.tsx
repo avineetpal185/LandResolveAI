@@ -267,6 +267,7 @@ export default function Home() {
   const [userLoaded, setUserLoaded] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [toast, setToast] = useState("");
+  const [welcomeModalName, setWelcomeModalName] = useState<string | null>(null);
   const [uploadedPdfText, setUploadedPdfText] = useState("");
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [input, setInput] = useState("");
@@ -1979,6 +1980,15 @@ export default function Home() {
         }
 
         /* PASTE HERE */
+        .sidebar-inner {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        }
+        .conv-list {
+        flex: 1;
+        overflow-y: auto;
+        }
         .toast-message {
         top: 70px;
         left: 50% !important;
@@ -2253,7 +2263,7 @@ export default function Home() {
                       width: "180px",
                     }}
                     >
-                      <GoogleLoginButton setUser={setUser} />
+                      <GoogleLoginButton setUser={setUser} setShowWelcomeModal={setWelcomeModalName} />
                     </div>
                   ) : (
                     <>
@@ -2889,6 +2899,87 @@ export default function Home() {
               borderRadius: "12px",
             }}
           />
+        </div>
+      )}
+      {welcomeModalName && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.7)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999999,
+            padding: "20px",
+          }}
+        >
+          <div
+            style={{
+              background: "#16161f",
+              border: "1px solid rgba(34,197,94,0.3)",
+              borderRadius: "20px",
+              padding: "36px 28px",
+              maxWidth: "380px",
+              width: "100%",
+              textAlign: "center",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(34,197,94,0.15)",
+            }}
+          >
+            <div
+              style={{
+                width: "64px",
+                height: "64px",
+                borderRadius: "50%",
+                background: "linear-gradient(135deg, #16a34a, #22c55e)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto 20px",
+                fontSize: "32px",
+              }}
+            >
+              ✅
+            </div>
+            <h2
+              style={{
+                color: "#f0f0f5",
+                fontSize: "20px",
+                fontWeight: 700,
+                marginBottom: "10px",
+              }}
+            >
+              Account Created Successfully
+            </h2>
+            <p
+              style={{
+                color: "#8b8b9e",
+                fontSize: "14px",
+                lineHeight: 1.6,
+                marginBottom: "26px",
+              }}
+            >
+              Welcome, <strong style={{ color: "#4ade80" }}>{welcomeModalName}</strong>!
+              Your LandResolve AI account has been created. Tap OK, then sign in
+              again to continue.
+            </p>
+            <button
+              onClick={() => setWelcomeModalName(null)}
+              style={{
+                background: "linear-gradient(135deg, #16a34a, #22c55e)",
+                color: "#fff",
+                border: "none",
+                borderRadius: "10px",
+                padding: "12px 40px",
+                fontSize: "14px",
+                fontWeight: 600,
+                cursor: "pointer",
+                width: "100%",
+              }}
+            >
+              OK
+            </button>
+          </div>
         </div>
       )}
 

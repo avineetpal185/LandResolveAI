@@ -13,7 +13,11 @@ declare global {
   }
 }
 
-async function handleLoginResponse(userData: any, setUser: any) {
+async function handleLoginResponse(
+  userData: any,
+  setUser: any,
+  setShowWelcomeModal: (name: string) => void
+) {
   window.dispatchEvent(
     new CustomEvent("show-toast", {
       detail: `⏳ Signing you in...`,
@@ -35,14 +39,12 @@ async function handleLoginResponse(userData: any, setUser: any) {
     const dbUser = await response.json();
 
     if (dbUser.is_new) {
-      window.dispatchEvent(
-        new CustomEvent("show-toast", {
-          detail: `✅ Account created! Tap Sign in again to continue.`,
-        })
-      );
+      // Brand new account — show big popup, DO NOT log in yet
+      setShowWelcomeModal(dbUser.name);
       return;
     }
 
+    // Existing account — log in normally, fast
     setUser(dbUser);
     localStorage.setItem("landresolve_user", JSON.stringify(dbUser));
 
@@ -61,20 +63,20 @@ async function handleLoginResponse(userData: any, setUser: any) {
   }
 }
 
-export default function GoogleLoginButton({ setUser }: any) {
+export default function GoogleLoginButton({ setUser, setShowWelcomeModal }: any) {
   const [isSigningIn, setIsSigningIn] = useState(false);
 
   useEffect(() => {
     window.onNativeGoogleSignIn = async (userData: any) => {
       setIsSigningIn(true);
-      await handleLoginResponse(userData, setUser);
+      await handleLoginResponse(userData, setUser, setShowWelcomeModal);
       setIsSigningIn(false);
     };
 
     return () => {
       window.onNativeGoogleSignIn = undefined;
     };
-  }, [setUser]);
+  }, [setUser, setShowWelcomeModal]);
 
   if (typeof window !== "undefined" && window.AndroidBridge) {
     return (
@@ -119,7 +121,7 @@ export default function GoogleLoginButton({ setUser }: any) {
           picture: userInfo.picture,
         };
 
-        await handleLoginResponse(userData, setUser);
+        await handleLoginResponse(userData, setUser, setShowWelcomeModal);
         setIsSigningIn(false);
       }}
       onError={() => {
