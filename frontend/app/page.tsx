@@ -2745,6 +2745,7 @@ export default function Home() {
           {/* INPUT BAR — mic and upload buttons removed */}
           <div className="input-area">
             <div className="input-inner">
+              
               {uploadedFileName && (
                 <div
                   style={{
@@ -2774,7 +2775,7 @@ export default function Home() {
                     📄
                   </div>
 
-                  <div>
+                  <div style={{ flex: 1 }}>
                     <div
                       style={{
                         color: "#fff",
@@ -2795,8 +2796,35 @@ export default function Home() {
                       PDF Document
                     </div>
                   </div>
+
+                  <button
+                    onClick={() => {
+                      setUploadedFileName("");
+                      setUploadedPdfText("");
+                    }}
+                    style={{
+                      width: "30px",
+                      height: "30px",
+                      borderRadius: "50%",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      background: "rgba(255,255,255,0.06)",
+                      color: "#94a3b8",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <X size={14} />
+                  </button>
                 </div>
               )}
+
+
+
+
+
 
               <div className="input-box">
 
