@@ -1,5 +1,5 @@
 from database import SessionLocal
-from models import Conversation, Message
+from models import User, Conversation, Message, Memory
 from database import engine
 from models import Base
 
@@ -10,6 +10,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse, FileResponse
 from retriever import retrieve_context
 from typing import Optional
+from dataset_search import search_dataset
+from fastapi.staticfiles import StaticFiles
+from image_mapper import DOCUMENT_IMAGES
+
+from sqlalchemy import DateTime
+from datetime import datetime
+from huggingface_hub import InferenceClient
+from fastapi.staticfiles import StaticFiles
+import asyncio
 
 import pytesseract
 from PIL import Image, ImageDraw, ImageFont
@@ -20,6 +29,7 @@ import os
 import re
 import uuid
 import httpx
+import json
 import requests 
 from datetime import datetime
 
@@ -36,21 +46,44 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+HF_TOKEN = os.getenv("HF_TOKEN")
+
+
+hf_client = InferenceClient(
+    provider="fal-ai",
+    api_key=HF_TOKEN,
+)
+
+
+print("HF TOKEN FOUND:", bool(HF_TOKEN))
+print("HF TOKEN START:", HF_TOKEN[:10] if HF_TOKEN else "NONE")
+
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 print("====APP STARTED VERSION 999====")
 print("OPENROUTER KEY FOUND:", OPENROUTER_API_KEY is not None)
+print("STEP A")
 
 
 
 
 app = FastAPI()
 
+
 Base.metadata.create_all(bind=engine)
 
+print("STEP B")
 GENERATED_DIR = "generated_files"
 os.makedirs(GENERATED_DIR, exist_ok=True)
 app.mount("/files", StaticFiles(directory=GENERATED_DIR), name="files")
+
+EDUCATIONAL_DOCS_DIR = "educational_documents"
+app.mount(
+    "/educational_documents",
+    StaticFiles(directory=EDUCATIONAL_DOCS_DIR),
+    name="educational_documents",
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -66,6 +99,11 @@ app.add_middleware(
 # SCHEMAS
 # =========================
 
+class GoogleUserRequest(BaseModel):
+    name: str
+    email: str
+    picture: str | None = None
+
 class MessageSchema(BaseModel):
     role: str
     content: str
@@ -73,7 +111,9 @@ class MessageSchema(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: list[MessageSchema]
-    conversation_id: Optional[int] = None
+    conversation_id: Optional[str] = None
+    user_id: Optional[str] = None
+    pdf_text: Optional[str] = None
 
 
 class GenerateRequest(BaseModel):
@@ -84,11 +124,22 @@ class GenerateRequest(BaseModel):
 
 class AIImageRequest(BaseModel):
     prompt: str
+    user_id: str | None = None
+    conversation_id: str | None = None
 
 
-# =========================
+# =========================       !!!!!!!!!!!!!!
 # HELPERS
 # =========================
+
+def find_document_image(user_message: str):
+    user_message = user_message.lower()
+
+    for keyword, filename in DOCUMENT_IMAGES.items():
+        if keyword in user_message:
+            return f"/educational_documents/{filename}"
+
+    return None
 
 def clean_text_for_render(text: str) -> str:
     emoji_pattern = re.compile(
@@ -105,6 +156,7 @@ def clean_text_for_render(text: str) -> str:
     text = emoji_pattern.sub("", text)
     text = text.replace("•", "-").replace("📞", "").replace("⚖️", "").replace("📄", "").replace("🏛️", "").replace("💡", "").replace("🔔", "")
     return text.strip()
+
 
 
 def parse_content_to_sections(content: str):
@@ -336,51 +388,33 @@ def generate_image(content: str, title: str) -> str:
 # Returns { url, prompt } — no base64, just a saved file URL
 # =========================
 
-HF_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
-
-
+#HF_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
 async def _fetch_and_save_ai_image(subject: str) -> dict:
     subject = subject.strip()
+
     if not subject:
         return {"error": "No subject provided."}
 
-    enhanced_prompt = (
-        f"{subject}, highly detailed, professional photography, "
-        f"vibrant colors, sharp focus, 4k quality, award winning"
-    )
-
-    headers = {
-        "Authorization": f"Bearer {HF_TOKEN}",
-        "Content-Type": "application/json",
-    }
-    payload = {
-        "inputs": enhanced_prompt,
-        "parameters": {
-            "num_inference_steps": 30,
-            "guidance_scale": 7.5,
-        }
-    }
-
     try:
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            response = await client.post(
-                HF_API_URL,
-                headers=headers,
-                json=payload,
-            )
-
-        if response.status_code == 503:
-            return {"error": "Model is loading on Hugging Face, please wait 20 seconds and try again."}
-
-        if response.status_code != 200:
-            return {"error": f"Image generation failed (HTTP {response.status_code}): {response.text[:200]}"}
-
-        content_type = response.headers.get("content-type", "")
-        if "image" not in content_type:
-            return {"error": f"Unexpected response from Hugging Face: {response.text[:200]}"}
+        import urllib.parse
+        import httpx
 
         filename = f"ai_{uuid.uuid4().hex}.png"
         filepath = os.path.join(GENERATED_DIR, filename)
+
+        prompt = urllib.parse.quote(subject)
+
+        image_url = (
+            f"https://image.pollinations.ai/prompt/{prompt}"
+            "?width=1024&height=1024&model=flux&nologo=true"
+        )
+
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            response = await client.get(image_url)
+
+        if response.status_code != 200:
+            return {"error": f"Pollinations error: {response.status_code}"}
+
         with open(filepath, "wb") as f:
             f.write(response.content)
 
@@ -390,17 +424,111 @@ async def _fetch_and_save_ai_image(subject: str) -> dict:
             "format": "ai_image",
         }
 
-    except httpx.TimeoutException:
-        return {"error": "Image generation timed out (>2 min). Please try again."}
     except Exception as e:
+        print("POLLINATIONS ERROR =", repr(e))
         return {"error": str(e)}
+    
+    
+
+# List moved to module level so it's defined once and never depends on
+# which branch (new vs existing conversation) runs first.
+ALLOWED_IMAGE_KEYWORDS = [
+    "land",
+    "property",
+    "farm",
+    "farmer",
+    "village",
+    "plot",
+    "boundary",
+    "survey",
+    "registry",
+    "sale deed",
+    "partition",
+    "power of attorney",
+    "will",
+    "jamabandi",
+    "mutation",
+    "fard",
+    "khasra",
+    "patwari",
+    "tehsil",
+    "map"
+]
+
+
+def is_land_related_prompt(prompt: str) -> bool:
+    """
+    Word-boundary based check so short/common words like
+    'will' or 'map' don't match inside unrelated words
+    (e.g. 'will' inside 'will this work', 'map' inside 'roadmap').
+    Multi-word phrases like 'sale deed' are matched as plain substrings.
+    """
+    text = prompt.lower()
+
+    for keyword in ALLOWED_IMAGE_KEYWORDS:
+        if " " in keyword:
+            if keyword in text:
+                return True
+        else:
+            if re.search(rf"\b{re.escape(keyword)}\b", text):
+                return True
+
+    return False
 
 
 @app.post("/generate-ai-image")
 async def generate_ai_image_endpoint(request: AIImageRequest):
+
     prompt = request.prompt.strip()
+
     if not prompt:
-        return JSONResponse({"error": "No prompt provided."}, status_code=400)
+        return JSONResponse(
+            {"error": "No prompt provided."},
+            status_code=400
+        )
+
+    db = SessionLocal()
+
+    if not request.conversation_id:
+
+        title = prompt[:40]
+
+        conversation = Conversation(
+            title=title,
+            user_id=request.user_id
+        )
+
+        db.add(conversation)
+        db.commit()
+        db.refresh(conversation)
+
+        conversation_id = conversation.id
+
+    else:
+        conversation_id = request.conversation_id
+
+    if not is_land_related_prompt(prompt):
+
+        user_message = Message(
+            conversation_id=conversation_id,
+            role="user",
+            content=prompt
+        )
+        db.add(user_message)
+
+        assistant_message = Message(
+            conversation_id=conversation_id,
+            role="assistant",
+            content="🏞️ I can generate only land and property related educational images."
+        )
+        db.add(assistant_message)
+
+        db.commit()
+
+        return JSONResponse({
+            "error": "Only land related images allowed.",
+            "conversation_id": conversation_id
+        })
 
     result = await _fetch_and_save_ai_image(prompt)
 
@@ -408,8 +536,30 @@ async def generate_ai_image_endpoint(request: AIImageRequest):
         status = 504 if "timed out" in result["error"] else 500
         return JSONResponse(result, status_code=status)
 
-    return JSONResponse(result)
+    user_message = Message(
+    conversation_id=conversation_id,
+    role="user",
+    content=prompt
+    )
 
+    db.add(user_message)
+
+    image_message = Message(
+    conversation_id=conversation_id,
+    role="ai_image",
+    content=json.dumps({
+        "url": result["url"],
+        "prompt": prompt
+    })
+    )
+
+    db.add(image_message)
+
+    db.commit()
+
+    result["conversation_id"] = conversation_id
+
+    return JSONResponse(result)
 
 # =========================
 # GENERATE PDF / SCREENSHOT ENDPOINT
@@ -438,6 +588,42 @@ async def generate_file(request: GenerateRequest):
 # CHAT API
 # =========================
 
+@app.post("/auth/google")
+async def save_google_user(user: GoogleUserRequest):
+
+    print("GOOGLE LOGIN HIT")
+    print(user)
+
+    db = SessionLocal()
+
+    existing_user = db.query(User).filter(
+        User.email == user.email
+    ).first()
+
+    if not existing_user:
+
+        new_user = User(
+            id=str(uuid.uuid4()),
+            name=user.name,
+            email=user.email,
+            picture=user.picture
+        )
+
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+
+        existing_user = new_user
+
+    db.close()
+
+    return {
+        "id": existing_user.id,
+        "name": existing_user.name,
+        "email": existing_user.email,
+        "picture": existing_user.picture
+    }
+
 @app.post("/chat")
 async def chat(request: ChatRequest):
 
@@ -454,7 +640,10 @@ async def chat(request: ChatRequest):
             (msg.content for msg in request.messages if msg.role == "user"), ""
         )
         title = first_user_message[:40] + "..." if len(first_user_message) > 40 else first_user_message
-        new_conversation = Conversation(title=title)
+        new_conversation = Conversation(
+        title=title,
+        user_id=request.user_id
+        )
         db.add(new_conversation)
         db.commit()
         db.refresh(new_conversation)
@@ -463,7 +652,110 @@ async def chat(request: ChatRequest):
         conversation_id = request.conversation_id
 
     latest_message = request.messages[-1].content
+    
+    dataset_result = search_dataset(latest_message)
+
+    print("DATASET RESULT:")
+    print(dataset_result)
+
+    if request.pdf_text:
+        latest_message = f"📄 [Extracted from PDF]\n\n{request.pdf_text}"
+
     clean_message = latest_message.lower().strip()
+
+    if request.user_id:
+
+        try:
+
+            memory_prompt = f"""
+    You are a memory extraction system.
+
+    Extract ONLY information that may be useful in future conversations.
+
+    Examples:
+
+    My name is Avineet
+    -> User's name is Avineet
+
+    I am from Punjab
+    -> User is from Punjab
+
+    I study AI-DS
+    -> User studies AI-DS
+
+    Call me Avi
+    -> User prefers to be called Avi
+
+    I am building LandResolve AI
+    -> User is building LandResolve AI
+
+    Return ONLY the memory itself.
+
+    Good:
+    User's name is Avineet
+
+    User is from Punjab
+
+    User studies AI-DS
+
+    Bad:
+    The user is from Punjab.
+
+    This memory should be saved.
+
+    I found the following memory.
+
+    If nothing should be remembered return:
+    NONE
+
+    User message:
+    {latest_message}
+    """
+
+            response = requests.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": "openai/gpt-oss-20b",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": memory_prompt
+                        }
+                    ]
+                },
+                timeout=20
+            )
+
+            memory_result = (
+                response.json()["choices"][0]["message"]["content"]
+                .strip()
+            )
+
+            if memory_result.upper() != "NONE":
+
+                existing = db.query(Memory).filter(
+                    Memory.user_id == request.user_id,
+                    Memory.memory_text == memory_result
+                ).first()
+
+                if not existing:
+
+                    db.add(
+                        Memory(
+                            id=str(uuid.uuid4()),
+                            user_id=request.user_id,
+                            memory_text=memory_result
+                        )
+                    )
+
+                    db.commit()
+
+        except Exception as e:
+            print("MEMORY SAVE ERROR:", e)
 
     last_saved_user = db.query(Message).filter(
         Message.conversation_id == conversation_id,
@@ -509,94 +801,283 @@ async def chat(request: ChatRequest):
             headers={"X-Conversation-Id": str(conversation_id)}
         )
 
+
     context = retrieve_context(latest_message)[:2000]
-    is_file_message = "📄 [Extracted from:" in latest_message
 
-    if is_file_message:
+    print("LATEST MESSAGE:")
+    print(latest_message)
+
+    is_file_message = "📄" in latest_message
+
+    print("IS FILE =", is_file_message)
+
+    question_count = latest_message.count("?")
+
+    print("QUESTION COUNT =", question_count)
+
+    if is_file_message and question_count >= 3:
+
+        system_prompt = """
+        
+IMPORTANT:
+
+The PDF contains only questions.
+
+Answer ONLY from the information present in the question.
+
+Do NOT invent:
+
+- laws
+- legal sections
+- court names
+- government offices
+- portals
+- forms
+- procedures
+- document names
+- timelines
+
+If information is not present in the question, say:
+
+"Not enough information is available in the question."
+
+Use only simple practical guidance.
+
+Never create tables.
+
+Never create long explanations.
+
+Maximum 5 lines per answer.
+
+You are LandResolve AI.
+
+The uploaded PDF contains land-related questions.
+
+Answer every question separately.
+
+CRITICAL RULES:
+
+- Use ONLY information contained in the question.
+- Do NOT invent:
+  - laws
+  - legal sections
+  - court names
+  - government offices
+  - forms
+  - notices
+  - procedures
+  - portals
+  - land records
+  - document names
+
+- Never write:
+  - Section numbers
+  - Act names
+  - Rule numbers
+  - Form names
+  - Court names
+
+- If unsure, say:
+  "The exact procedure may vary by state."
+
+- Use only these land records when genuinely relevant:
+  - Sale Deed
+  - Mutation Record
+  - Jamabandi
+  - Fard
+  - Khasra Number
+  - Khata Number
+  - Survey Record
+  - Encumbrance Certificate
+  - Property Tax Receipt
+
+- Keep answers short.
+
+- Do not create tables.
+
+- Do not create legal citations.
+
+- Do not create examples.
+
+- Do not assume facts.
+
+- Do not explain laws.
+
+Format:
+
+Question:
+<repeat exactly>
+
+Answer:
+<simple answer>
+
+Useful Documents:
+<list or Not specified>
+
+Next Steps:
+<simple practical steps>
+"""
+        num_tokens = 500
+
+    elif is_file_message:
+
         system_prompt = f"""
-
 You are LandResolve AI — a legal document and land record analyzer.
 
-The user has uploaded a document or image. Analyze only the text that can be clearly extracted.
+The user has uploaded a document or image.Analyze only the text that can be clearly extracted.
+
+  Rules:
+1. Only report information clearly present in the document.
+2. Never guess or invent information.
+3. Identify the document type if possible.
+4. Provide a concise summary.
+5. Extract names, dates, survey numbers, plot numbers, ownership details, and property information when present.
+6. If it is a land / property document, explain its significance.
+7. If information is unclear, clearly say so.
+
+Legal Context:
+{ context }
+"""
+        num_tokens = 500
+
+    else:
+
+        system_prompt = f"""
+You are LandResolve AI — a smart Indian legal land assistant.
+
+Your primary job is to help users with Punjab land-related issues.
+
+When Punjab Dataset Guidance is provided:
+
+1. Use the dataset information as the primary source.
+2. Explain the information in simple language.
+3. Expand the answer when helpful.
+4. Do not contradict the dataset.
+5. Do not invent fees, timelines, legal guarantees, government policies, office addresses, or official procedures not present in the dataset.
+6. If documents, offices, officials, or next steps are provided, include them naturally in the answer.
+7. Give practical guidance, not just definitions.
+
+CREATOR INFORMATION:
+
+LandResolve AI is an AI-powered legal assistance platform focused on land disputes, property rights, land records, and legal guidance.
+
+LandResolve AI was founded, designed, and developed by Avineet Pal Singh.
+
+About the Founder:
+
+Avineet Pal Singh is a B.Tech student specializing in Artificial Intelligence and Data Science (AI & DS).
+
+He developed LandResolve AI to help citizens, farmers, and landowners better understand land records, property rights, legal procedures, and dispute resolution through AI-powered guidance.
+
+The goal of LandResolve AI is to make legal and land-related information more accessible, understandable, and easier to navigate for everyone.
+
+Contact Information:
+Founder: Avineet Pal Singh
+Email: singhavineetpal@gmail.com
+
+If users ask:
+- Who made you?
+- Who created you?
+- Who developed you?
+- Who is your founder?
+- Who owns LandResolve AI?
+- Tell me about your founder.
+- Who is Avineetpal Singh?
+
+Answer using the founder information above.
+
+LandResolve AI was independently designed and developed by Avineetpal Singh. 
+
 
 Rules:
-
-1. Only report information that is clearly present in the document.
-2. Never guess, invent, or assume missing information.
-3. If parts of the text are unreadable, state that some portions could not be clearly extracted.
-4. First identify the document type if reasonably clear (for example: land record, sale deed, notice, agreement, court order, receipt, application form, etc.).
-5. Provide a concise summary of the document.
-6. List the important facts found in the document.
-7. Highlight names, dates, survey numbers, plot numbers, registration numbers, ownership details, and property details when present.
-8. If the document relates to land or property, explain its significance in simple language.
-9. Do not provide legal conclusions unless they are directly supported by the document.
-10. If information is missing or unclear, clearly say so.
-11. Do not repeat information.
-12. Use a clean and professional format without forcing emojis.
-13. For serious legal disputes or court-related matters, suggest consulting a qualified lawyer only when appropriate.
-14. If you are not certain about a fact, clearly state that the document does not provide enough information.
-15. Never invent names, dates, ownership details, survey numbers, plot numbers, or legal conclusions.
-
-Goal:
-Provide an accurate, factual, and easy-to-understand summary of the uploaded document.
-
+Rules:
+1. Answer greetings naturally.
+2. Explain land disputes in simple language.
+3. Provide practical guidance.
+4. Do not invent legal facts.
+5. Mention relevant records when appropriate.
+6. If dataset documents, offices, officials, or next steps are provided, use only those items.
+7. Do not invent forms, fees, certificates, letters, timelines, office counters, or procedures not present in the dataset.
+8. Keep language clear and natural. Avoid made-up translations or uncommon words.
 
 Legal Context:
 {context}
 """
         num_tokens = 500
-    else:
-        system_prompt = f"""
-
-You are LandResolve AI — a smart Indian legal land assistant.
-
-Rules:
-
-1. Answer greetings and casual conversation naturally.
-2. If asked who you are, explain that you are LandResolve AI.
-3. Specialize in land disputes, property rights, land registration, inheritance, mutation, encroachment, and tenant issues.
-4. Provide clear, practical, and easy-to-understand legal guidance.
-5. Be professional, concise, and user-friendly.
-6. For greetings and general conversation (Hi, Hello, Thanks, How are you, Who are you), respond normally.
-7. If a question is unrelated to land or property matters, respond politely, briefly mention your specialization, and redirect the conversation when appropriate.
-8. Never respond with only a refusal message. Always provide a natural response of at least 2 sentences.
-9. Mention relevant land records, documents, legal concepts, laws, or procedures when reasonably applicable.
-10. Explain legal concepts in simple language without unnecessary legal jargon.
-11. If the issue involves court proceedings, ownership disputes, fraud, eviction, inheritance conflicts, or legal action, suggest consulting a qualified lawyer when appropriate.
-12. Do not suggest consulting a lawyer for greetings, simple questions, or general information.
-13. If uncertain about a legal fact, clearly say so instead of guessing.
-14. Never invent laws, legal sections, court orders, government policies, ownership details, forms, timelines, authorities, government offices, portals, case numbers, or legal references.
-15. Only mention specific legal sections when reasonably confident they are correct and directly applicable.
-16. If unsure about a specific law, section, authority, procedure, or requirement, clearly state that it should be verified through official sources or a qualified legal professional.
-17. Prefer practical guidance and legal procedures over citing legal section numbers.
-18. When discussing land disputes, prioritize practical actions such as verifying Sale Deeds, Mutation Records, Jamabandi, Fard, Khasra Numbers, Survey Records, Encumbrance Certificates, Registration Records, and Revenue Records before discussing legal action.
-19. Accuracy is more important than completeness.
-20. Accuracy is more important than sounding authoritative.
-21. Do not present assumptions, estimates, or general guidance as confirmed legal facts.
-22. Distinguish clearly between verified information and general guidance.
-23. When information may vary by state, clearly mention that state-specific rules may apply.
-24. Focus on helping the user understand the issue, available options, relevant records, and practical next steps.
+    
+    
+        
+     
 
 
-Response Guidelines:
-- Use a natural and professional format.
-- Use paragraphs or bullet points only when helpful.
-- Do not force emojis.
-- Do not force a fixed number of points.
-- Keep responses clear, practical, and easy to understand.
-- For serious legal disputes, suggest consulting a lawyer when appropriate.
+    history_messages = db.query(Message).filter(
+        Message.conversation_id == conversation_id
+    ).all()
 
-Legal Context:
-{context}
-"""
-        num_tokens = 280
+    memory_context = ""
+
+    if request.user_id:
+        memories = db.query(Memory).filter(
+            Memory.user_id == request.user_id
+        ).all()
+
+        memory_context = "\n".join(
+            [m.memory_text for m in memories]
+        )
 
     db.close()
+    
+    dataset_context = ""
+
+    if dataset_result:
+
+        dataset_context = f"""
+Punjab Dataset Guidance
+
+IMPORTANT:
+If FAQ data exists, use that answer as the primary answer.
+Do not invent extra legal details.
+Do not override dataset information.
+Prefer dataset information over model knowledge.
+Use the detected intent below.
+Do not reinterpret the user's issue.
+If the intent is mutation_problem, treat Intkal as Mutation.
+If the intent is family_dispute, treat it as a land dispute.
+Use the dataset guidance as the primary source.
+
+Intent:
+{dataset_result.get('intent', '')}
+
+FAQ:
+{dataset_result.get('faq_answer', '')}
+
+Village:
+{dataset_result.get('village_info', {})}
+
+Documents:
+{', '.join(dataset_result.get('documents', []))}
+
+Offices:
+{', '.join(dataset_result.get('offices', []))}
+
+Officials:
+{', '.join(dataset_result.get('officials', []))}
+
+Next Steps:
+{', '.join(dataset_result.get('next_steps', []))}
+"""
+
 
     def generate():
-        chat_history = [{"role": "system", "content": system_prompt}]
+        chat_history = [{
+            "role": "system",
+            "content":
+                system_prompt
+                    + f"\n\nUser Memory:\n{memory_context}"
+                    + f"\n\n{dataset_context}"
+        }]
 
-        for msg in request.messages[-6:]:
+        for msg in history_messages[-20:]:
             chat_history.append({
                 "role": msg.role,
                 "content": msg.content
@@ -615,20 +1096,45 @@ Legal Context:
                 json={
                     "model": "openai/gpt-oss-20b",
                     "messages": chat_history
+                    
                 },
                 timeout=60
+                
             )
             print("STATUS:", response.status_code)
             print("TEXT:", response.text)
 
             data = response.json()
 
+            print("FULL RESPONSE:")
+            print(data)
+
+            print("CONTENT:")
+            print(data["choices"][0]["message"]["content"])
+
             print("OPENROUTER RESPONSE:", data)
 
-            if "choices" in data:
+            if (
+                "choices" in data
+                and data["choices"]
+                and data["choices"][0]["message"].get("content")
+            ):
                 full_ai_response = data["choices"][0]["message"]["content"]
+                
+                image_url = find_document_image(latest_message)
+                print("IMAGE URL =", image_url)
+                
+                if image_url:
+                    full_ai_response = json.dumps({
+                    "type": "document_image",
+                    "text": full_ai_response,
+                    "url": image_url
+                })
             else:
-                full_ai_response = str(data)
+                full_ai_response = (
+                    "Sorry, I could not generate a response. "
+                    "Please try again."
+                )
 
         except Exception as e:
             full_ai_response = f"OPENROUTER ERROR: {str(e)}"
@@ -711,17 +1217,28 @@ async def extract_text(file: UploadFile = File(...)):
 # =========================
 # CONVERSATIONS CRUD
 # =========================
-
 @app.get("/conversations")
-async def get_conversations():
+async def get_conversations(user_id: str):
+    print("USER ID RECEIVED =", user_id)
+
     db = SessionLocal()
-    convs = db.query(Conversation).order_by(Conversation.id.desc()).all()
+
+    convs = (
+        db.query(Conversation)
+        .filter(
+            Conversation.user_id == user_id
+        )
+        .order_by(Conversation.created_at.desc())
+        .all()
+    )
+
     db.close()
+
     return convs
 
 
 @app.get("/conversations/{conversation_id}")
-async def get_conversation_messages(conversation_id: int):
+async def get_conversation_messages(conversation_id: str):
     db = SessionLocal()
     msgs = db.query(Message).filter(
         Message.conversation_id == conversation_id
@@ -731,7 +1248,7 @@ async def get_conversation_messages(conversation_id: int):
 
 
 @app.delete("/conversations/{conversation_id}")
-async def delete_conversation(conversation_id: int):
+async def delete_conversation(conversation_id: str):
     db = SessionLocal()
     db.query(Message).filter(Message.conversation_id == conversation_id).delete()
     db.query(Conversation).filter(Conversation.id == conversation_id).delete()
@@ -745,14 +1262,21 @@ class RenameRequest(BaseModel):
 
 
 @app.patch("/conversations/{conversation_id}")
-async def rename_conversation(conversation_id: int, body: RenameRequest):
+async def rename_conversation(conversation_id: str, body: RenameRequest):
     db = SessionLocal()
     conv = db.query(Conversation).filter(Conversation.id == conversation_id).first()
     if conv:
         conv.title = body.title
+        
         db.commit()
+        
+        
     db.close()
     return {"success": True}
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
 
 
 import uvicorn

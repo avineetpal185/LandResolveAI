@@ -1,0 +1,193 @@
+{
+    "land_documents": [
+      {
+        "document_name": "Jamabandi",
+        "category": "Land Record",
+        "purpose": "Shows ownership and cultivation records.",
+        "related_offices": [
+          "Patwari Office",
+          "Tehsil Office",
+          "Fard Kendra"
+        ],
+        "related_officials": [
+          "Patwari",
+          "Kanungo"
+        ],
+        "synonyms": [
+          "Jamabandi",
+          "Land Record",
+          "Ownership Record"
+        ]
+      },
+      {
+        "document_name": "Fard",
+        "category": "Land Record",
+        "purpose": "Copy of ownership details and land record.",
+        "related_offices": [
+          "Fard Kendra",
+          "Patwari Office"
+        ],
+        "related_officials": [
+          "Patwari"
+        ],
+        "synonyms": [
+          "Fard",
+          "Fard Copy"
+        ]
+      },
+      {
+        "document_name": "Mutation",
+        "category": "Ownership Transfer",
+        "purpose": "Updates ownership records after transfer.",
+        "related_offices": [
+          "Tehsil Office",
+          "Patwari Office"
+        ],
+        "related_officials": [
+          "Patwari",
+          "Tehsildar"
+        ],
+        "synonyms": [
+          "Mutation",
+          "Intkal",
+          "Inteqal",
+          "Ownership Transfer"
+        ]
+      },
+      {
+        "document_name": "Registry",
+        "category": "Property Registration",
+        "purpose": "Official registration of property transfer.",
+        "related_offices": [
+          "Sub Registrar Office"
+        ],
+        "related_officials": [
+          "Sub Registrar"
+        ],
+        "synonyms": [
+          "Registry",
+          "Sale Deed",
+          "Registered Deed"
+        ]
+      },
+      {
+        "document_name": "Sale Deed",
+        "category": "Property Registration",
+        "purpose": "Proof of property sale transaction.",
+        "related_offices": [
+          "Sub Registrar Office"
+        ],
+        "related_officials": [
+          "Sub Registrar"
+        ]
+      },
+      {
+        "document_name": "Gift Deed",
+        "category": "Property Transfer",
+        "purpose": "Transfer of property as a gift.",
+        "related_offices": [
+          "Sub Registrar Office"
+        ],
+        "related_officials": [
+          "Sub Registrar"
+        ]
+      },
+      {
+        "document_name": "Lease Deed",
+        "category": "Lease",
+        "purpose": "Agreement for leasing property.",
+        "related_offices": [
+          "Sub Registrar Office"
+        ]
+      },
+      {
+        "document_name": "Rent Agreement",
+        "category": "Lease",
+        "purpose": "Agreement between landlord and tenant."
+      },
+      {
+        "document_name": "Partition Deed",
+        "category": "Family Property",
+        "purpose": "Division of jointly owned property."
+      },
+      {
+        "document_name": "Khasra Number",
+        "category": "Land Identification",
+        "purpose": "Unique number identifying a land parcel."
+      },
+      {
+        "document_name": "Khata Number",
+        "category": "Land Identification",
+        "purpose": "Account number of land holdings."
+      },
+      {
+        "document_name": "Khewat Number",
+        "category": "Land Identification",
+        "purpose": "Ownership account number."
+      },
+      {
+        "document_name": "Khatoni",
+        "category": "Land Record",
+        "purpose": "Record of cultivation and holdings."
+      },
+      {
+        "document_name": "Tatima",
+        "category": "Land Map",
+        "purpose": "Map showing land boundaries."
+      },
+      {
+        "document_name": "Nakal",
+        "category": "Land Record",
+        "purpose": "Certified copy of land records."
+      },
+      {
+        "document_name": "Power of Attorney",
+        "category": "Authorization",
+        "purpose": "Authorizes another person to act on behalf of owner.",
+        "synonyms": [
+          "POA",
+          "Power of Attorney"
+        ]
+      },
+      {
+        "document_name": "Affidavit",
+        "category": "Legal Document",
+        "purpose": "Written sworn statement."
+      },
+      {
+        "document_name": "Legal Heir Certificate",
+        "category": "Succession",
+        "purpose": "Identifies legal heirs of deceased owner."
+      },
+      {
+        "document_name": "Death Certificate",
+        "category": "Succession",
+        "purpose": "Official proof of death."
+      },
+      {
+        "document_name": "Family Tree Certificate",
+        "category": "Succession",
+        "purpose": "Shows family relationships for inheritance matters."
+      },
+      {
+        "document_name": "Court Order",
+        "category": "Judicial",
+        "purpose": "Order issued by a court."
+      },
+      {
+        "document_name": "Court Decree",
+        "category": "Judicial",
+        "purpose": "Final decision issued by a court."
+      },
+      {
+        "document_name": "Girdawari",
+        "category": "Agriculture Record",
+        "purpose": "Record of crops cultivated on land."
+      },
+      {
+        "document_name": "Musavi",
+        "category": "Land Map",
+        "purpose": "Village map showing land parcels."
+      }
+    ]
+  }

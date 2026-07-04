@@ -1,0 +1,235 @@
+{
+    "government_offices": [
+      {
+        "office_name": "Tehsil Office",
+        "office_type": "Revenue",
+        "handles": [
+          "Mutation",
+          "Jamabandi",
+          "Land Records",
+          "Partition Cases",
+          "Ownership Verification"
+        ]
+      },
+      {
+        "office_name": "Sub Tehsil Office",
+        "office_type": "Revenue",
+        "handles": [
+          "Mutation",
+          "Land Records",
+          "Revenue Services"
+        ]
+      },
+      {
+        "office_name": "SDM Office",
+        "office_type": "Administrative",
+        "handles": [
+          "Revenue Appeals",
+          "Land Disputes",
+          "Administrative Matters"
+        ]
+      },
+      {
+        "office_name": "DC Office",
+        "office_type": "District Administration",
+        "handles": [
+          "District Revenue Administration",
+          "Land Acquisition",
+          "Public Grievances"
+        ]
+      },
+      {
+        "office_name": "BDPO Office",
+        "office_type": "Rural Development",
+        "handles": [
+          "Village Development",
+          "Panchayat Matters"
+        ]
+      },
+      {
+        "office_name": "Patwari Office",
+        "office_type": "Revenue",
+        "handles": [
+          "Jamabandi",
+          "Mutation",
+          "Khasra Records",
+          "Field Verification",
+          "Land Records"
+        ]
+      },
+      {
+        "office_name": "Kanungo Office",
+        "office_type": "Revenue",
+        "handles": [
+          "Patwari Supervision",
+          "Revenue Verification",
+          "Land Record Inspection"
+        ]
+      },
+      {
+        "office_name": "Revenue Department",
+        "office_type": "Government Department",
+        "handles": [
+          "Land Administration",
+          "Revenue Records",
+          "Mutation Services"
+        ]
+      },
+      {
+        "office_name": "Fard Kendra",
+        "office_type": "Citizen Service",
+        "handles": [
+          "Fard Copy",
+          "Jamabandi Copy",
+          "Land Record Services"
+        ]
+      },
+      {
+        "office_name": "Suwidha Kendra",
+        "office_type": "Citizen Service",
+        "handles": [
+          "Certificates",
+          "Applications",
+          "Government Services"
+        ]
+      },
+      {
+        "office_name": "Municipal Corporation",
+        "office_type": "Urban Local Body",
+        "handles": [
+          "Property Tax",
+          "Building Approval",
+          "Municipal Records"
+        ]
+      },
+      {
+        "office_name": "Municipal Council",
+        "office_type": "Urban Local Body",
+        "handles": [
+          "Property Tax",
+          "Urban Records"
+        ]
+      },
+      {
+        "office_name": "Nagar Panchayat",
+        "office_type": "Urban Local Body",
+        "handles": [
+          "Local Administration",
+          "Property Records"
+        ]
+      },
+      {
+        "office_name": "Panchayat Office",
+        "office_type": "Village Administration",
+        "handles": [
+          "Shamlat Land",
+          "Village Matters",
+          "Local Disputes"
+        ]
+      },
+      {
+        "office_name": "District Court",
+        "office_type": "Judicial",
+        "handles": [
+          "Property Cases",
+          "Civil Cases",
+          "Land Disputes"
+        ]
+      },
+      {
+        "office_name": "Civil Court",
+        "office_type": "Judicial",
+        "handles": [
+          "Property Disputes",
+          "Civil Suits",
+          "Partition Cases"
+        ]
+      },
+      {
+        "office_name": "Lok Adalat",
+        "office_type": "Judicial",
+        "handles": [
+          "Settlement",
+          "Mediation",
+          "Dispute Resolution"
+        ]
+      },
+      {
+        "office_name": "Police Station",
+        "office_type": "Law Enforcement",
+        "handles": [
+          "Fraud Complaints",
+          "Trespassing",
+          "Forgery Cases"
+        ]
+      },
+      {
+        "office_name": "Revenue Court",
+        "office_type": "Judicial",
+        "handles": [
+          "Revenue Appeals",
+          "Mutation Disputes",
+          "Land Revenue Cases"
+        ]
+      },
+      {
+        "office_name": "Registrar Office",
+        "office_type": "Registration",
+        "handles": [
+          "Property Registration",
+          "Sale Deeds",
+          "Gift Deeds"
+        ]
+      },
+      {
+        "office_name": "Sub Registrar Office",
+        "office_type": "Registration",
+        "handles": [
+          "Registry",
+          "Property Transfer",
+          "Document Registration"
+        ]
+      },
+      {
+        "office_name": "Village Secretary Office",
+        "office_type": "Village Administration",
+        "handles": [
+          "Village Certificates",
+          "Panchayat Records"
+        ]
+      },
+      {
+        "office_name": "Agriculture Department",
+        "office_type": "Agriculture",
+        "handles": [
+          "Farmer Schemes",
+          "Subsidies",
+          "Crop Support"
+        ]
+      },
+      {
+        "office_name": "Irrigation Department",
+        "office_type": "Agriculture",
+        "handles": [
+          "Canal Water",
+          "Irrigation Issues"
+        ]
+      },
+      {
+        "office_name": "Electricity Board Office",
+        "office_type": "Utility",
+        "handles": [
+          "Agricultural Connections",
+          "Electricity Complaints"
+        ]
+      },
+      {
+        "office_name": "Water Supply Department",
+        "office_type": "Utility",
+        "handles": [
+          "Water Connections",
+          "Water Supply Issues"
+        ]
+      }
+    ]
+  }

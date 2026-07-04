@@ -1,0 +1,119 @@
+{
+    "punjab_districts": [
+      {
+        "district_name": "Amritsar",
+        "headquarters": "Amritsar",
+        "region": "Majha"
+      },
+      {
+        "district_name": "Barnala",
+        "headquarters": "Barnala",
+        "region": "Malwa"
+      },
+      {
+        "district_name": "Bathinda",
+        "headquarters": "Bathinda",
+        "region": "Malwa"
+      },
+      {
+        "district_name": "Faridkot",
+        "headquarters": "Faridkot",
+        "region": "Malwa"
+      },
+      {
+        "district_name": "Fatehgarh Sahib",
+        "headquarters": "Fatehgarh Sahib",
+        "region": "Malwa"
+      },
+      {
+        "district_name": "Fazilka",
+        "headquarters": "Fazilka",
+        "region": "Malwa"
+      },
+      {
+        "district_name": "Ferozepur",
+        "headquarters": "Ferozepur",
+        "region": "Malwa"
+      },
+      {
+        "district_name": "Gurdaspur",
+        "headquarters": "Gurdaspur",
+        "region": "Majha"
+      },
+      {
+        "district_name": "Hoshiarpur",
+        "headquarters": "Hoshiarpur",
+        "region": "Doaba"
+      },
+      {
+        "district_name": "Jalandhar",
+        "headquarters": "Jalandhar",
+        "region": "Doaba"
+      },
+      {
+        "district_name": "Kapurthala",
+        "headquarters": "Kapurthala",
+        "region": "Doaba"
+      },
+      {
+        "district_name": "Ludhiana",
+        "headquarters": "Ludhiana",
+        "region": "Malwa"
+      },
+      {
+        "district_name": "Malerkotla",
+        "headquarters": "Malerkotla",
+        "region": "Malwa"
+      },
+      {
+        "district_name": "Mansa",
+        "headquarters": "Mansa",
+        "region": "Malwa"
+      },
+      {
+        "district_name": "Moga",
+        "headquarters": "Moga",
+        "region": "Malwa"
+      },
+      {
+        "district_name": "Sri Muktsar Sahib",
+        "headquarters": "Sri Muktsar Sahib",
+        "region": "Malwa"
+      },
+      {
+        "district_name": "Pathankot",
+        "headquarters": "Pathankot",
+        "region": "Majha"
+      },
+      {
+        "district_name": "Patiala",
+        "headquarters": "Patiala",
+        "region": "Malwa"
+      },
+      {
+        "district_name": "Rupnagar",
+        "headquarters": "Rupnagar",
+        "region": "Malwa"
+      },
+      {
+        "district_name": "SAS Nagar Mohali",
+        "headquarters": "Mohali",
+        "region": "Malwa"
+      },
+      {
+        "district_name": "Sangrur",
+        "headquarters": "Sangrur",
+        "region": "Malwa"
+      },
+      {
+        "district_name": "Shaheed Bhagat Singh Nagar",
+        "headquarters": "Nawanshahr",
+        "region": "Doaba"
+      },
+      {
+        "district_name": "Tarn Taran",
+        "headquarters": "Tarn Taran",
+        "region": "Majha"
+      }
+    ]
+  }

@@ -1,0 +1,280 @@
+{
+    "services": [
+      {
+        "service": "Mutation",
+        "documents": [
+          "Jamabandi",
+          "Registry",
+          "Identity Proof"
+        ],
+        "authority": [
+          "Patwari",
+          "Tehsildar"
+        ],
+        "office": [
+          "Patwari Office",
+          "Tehsil Office"
+        ]
+      },
+      {
+        "service": "Mutation After Death",
+        "documents": [
+          "Death Certificate",
+          "Legal Heir Certificate",
+          "Jamabandi"
+        ],
+        "authority": [
+          "Patwari",
+          "Tehsildar"
+        ],
+        "office": [
+          "Patwari Office",
+          "Tehsil Office"
+        ]
+      },
+      {
+        "service": "Registry",
+        "documents": [
+          "Identity Proof",
+          "Ownership Documents",
+          "Photographs"
+        ],
+        "authority": [
+          "Sub Registrar"
+        ],
+        "office": [
+          "Sub Registrar Office"
+        ]
+      },
+      {
+        "service": "Jamabandi Copy",
+        "documents": [
+          "Property Details"
+        ],
+        "authority": [
+          "Patwari"
+        ],
+        "office": [
+          "Patwari Office",
+          "Fard Kendra"
+        ]
+      },
+      {
+        "service": "Fard Copy",
+        "documents": [
+          "Property Details"
+        ],
+        "authority": [
+          "Patwari"
+        ],
+        "office": [
+          "Fard Kendra"
+        ]
+      },
+      {
+        "service": "Demarcation",
+        "documents": [
+          "Jamabandi",
+          "Tatima",
+          "Khasra Details"
+        ],
+        "authority": [
+          "Patwari",
+          "Kanungo"
+        ],
+        "office": [
+          "Patwari Office",
+          "Tehsil Office"
+        ]
+      },
+      {
+        "service": "Inheritance Transfer",
+        "documents": [
+          "Death Certificate",
+          "Legal Heir Certificate",
+          "Jamabandi"
+        ],
+        "authority": [
+          "Tehsildar"
+        ],
+        "office": [
+          "Tehsil Office"
+        ]
+      },
+      {
+        "service": "Partition",
+        "documents": [
+          "Jamabandi",
+          "Ownership Records"
+        ],
+        "authority": [
+          "Tehsildar"
+        ],
+        "office": [
+          "Tehsil Office"
+        ]
+      },
+      {
+        "service": "Ownership Verification",
+        "documents": [
+          "Jamabandi",
+          "Registry"
+        ],
+        "authority": [
+          "Patwari",
+          "Kanungo"
+        ],
+        "office": [
+          "Patwari Office"
+        ]
+      },
+      {
+        "service": "Property Registration",
+        "documents": [
+          "Sale Deed",
+          "Identity Proof",
+          "Photographs"
+        ],
+        "authority": [
+          "Sub Registrar"
+        ],
+        "office": [
+          "Sub Registrar Office"
+        ]
+      },
+      {
+        "service": "Gift Deed Registration",
+        "documents": [
+          "Gift Deed",
+          "Identity Proof"
+        ],
+        "authority": [
+          "Sub Registrar"
+        ],
+        "office": [
+          "Sub Registrar Office"
+        ]
+      },
+      {
+        "service": "Power Of Attorney Registration",
+        "documents": [
+          "Power Of Attorney",
+          "Identity Proof"
+        ],
+        "authority": [
+          "Sub Registrar"
+        ],
+        "office": [
+          "Sub Registrar Office"
+        ]
+      },
+      {
+        "service": "Duplicate Registry Copy",
+        "documents": [
+          "Identity Proof",
+          "Property Details"
+        ],
+        "authority": [
+          "Sub Registrar"
+        ],
+        "office": [
+          "Sub Registrar Office"
+        ]
+      },
+      {
+        "service": "Legal Heir Certificate",
+        "documents": [
+          "Death Certificate",
+          "Family Tree Details"
+        ],
+        "authority": [
+          "Tehsildar"
+        ],
+        "office": [
+          "Tehsil Office"
+        ]
+      },
+      {
+        "service": "Property Tax",
+        "documents": [
+          "Property Details"
+        ],
+        "authority": [
+          "Municipal Officer"
+        ],
+        "office": [
+          "Municipal Corporation",
+          "Municipal Council"
+        ]
+      },
+      {
+        "service": "Farmer Compensation",
+        "documents": [
+          "Land Records",
+          "Crop Details"
+        ],
+        "authority": [
+          "Agriculture Officer"
+        ],
+        "office": [
+          "Agriculture Department"
+        ]
+      },
+      {
+        "service": "Canal Water Complaint",
+        "documents": [
+          "Land Records"
+        ],
+        "authority": [
+          "Irrigation Officer"
+        ],
+        "office": [
+          "Irrigation Department"
+        ]
+      },
+      {
+        "service": "Electricity Connection",
+        "documents": [
+          "Identity Proof",
+          "Land Proof"
+        ],
+        "authority": [
+          "Electricity Officer"
+        ],
+        "office": [
+          "Electricity Board Office"
+        ]
+      },
+      {
+        "service": "Shamlat Land Complaint",
+        "documents": [
+          "Village Records",
+          "Jamabandi"
+        ],
+        "authority": [
+          "Sarpanch",
+          "BDPO"
+        ],
+        "office": [
+          "Panchayat Office",
+          "BDPO Office"
+        ]
+      },
+      {
+        "service": "Land Fraud Complaint",
+        "documents": [
+          "Registry Copy",
+          "Jamabandi",
+          "Identity Proof"
+        ],
+        "authority": [
+          "Police Officer",
+          "Sub Registrar"
+        ],
+        "office": [
+          "Police Station",
+          "Sub Registrar Office"
+        ]
+      }
+    ]
+  }

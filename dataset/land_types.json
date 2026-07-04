@@ -1,0 +1,158 @@
+{
+    "land_types": [
+      {
+        "land_type": "Agricultural Land",
+        "description": "Land primarily used for farming and agricultural activities.",
+        "common_issues": [
+          "Boundary Dispute",
+          "Canal Water Dispute",
+          "Crop Damage",
+          "Encroachment",
+          "Inheritance Dispute"
+        ]
+      },
+      {
+        "land_type": "Residential Land",
+        "description": "Land used for residential houses and housing purposes.",
+        "common_issues": [
+          "Property Dispute",
+          "Boundary Wall Dispute",
+          "Illegal Possession",
+          "Ownership Conflict"
+        ]
+      },
+      {
+        "land_type": "Commercial Land",
+        "description": "Land used for commercial and business purposes.",
+        "common_issues": [
+          "Lease Dispute",
+          "Ownership Dispute",
+          "Unauthorized Construction"
+        ]
+      },
+      {
+        "land_type": "Industrial Land",
+        "description": "Land allocated for industrial use.",
+        "common_issues": [
+          "Land Acquisition",
+          "Ownership Verification",
+          "Boundary Disputes"
+        ]
+      },
+      {
+        "land_type": "Panchayat Land",
+        "description": "Land owned or managed by the village panchayat.",
+        "common_issues": [
+          "Illegal Occupation",
+          "Shamlat Dispute",
+          "Village Land Conflict"
+        ]
+      },
+      {
+        "land_type": "Shamlat Land",
+        "description": "Common village land shared by the community.",
+        "common_issues": [
+          "Encroachment",
+          "Illegal Possession",
+          "Panchayat Dispute"
+        ]
+      },
+      {
+        "land_type": "Government Land",
+        "description": "Land owned by government authorities.",
+        "common_issues": [
+          "Encroachment",
+          "Acquisition Issues",
+          "Unauthorized Use"
+        ]
+      },
+      {
+        "land_type": "Forest Land",
+        "description": "Land protected under forest regulations.",
+        "common_issues": [
+          "Illegal Occupation",
+          "Land Use Violation"
+        ]
+      },
+      {
+        "land_type": "Canal Land",
+        "description": "Land associated with canal infrastructure.",
+        "common_issues": [
+          "Canal Water Dispute",
+          "Encroachment"
+        ]
+      },
+      {
+        "land_type": "Abadi Land",
+        "description": "Village habitation land used for residential settlement.",
+        "common_issues": [
+          "Boundary Dispute",
+          "Ownership Dispute"
+        ]
+      },
+      {
+        "land_type": "Vacant Land",
+        "description": "Unused land without active development.",
+        "common_issues": [
+          "Illegal Possession",
+          "Boundary Issues"
+        ]
+      },
+      {
+        "land_type": "Village Common Land",
+        "description": "Community land intended for common village use.",
+        "common_issues": [
+          "Unauthorized Occupation",
+          "Panchayat Conflict"
+        ]
+      },
+      {
+        "land_type": "Institutional Land",
+        "description": "Land allocated to institutions and organizations.",
+        "common_issues": [
+          "Ownership Verification",
+          "Boundary Issues"
+        ]
+      },
+      {
+        "land_type": "Gurdwara Land",
+        "description": "Land associated with Gurdwara properties.",
+        "common_issues": [
+          "Management Disputes",
+          "Ownership Issues"
+        ]
+      },
+      {
+        "land_type": "Temple Land",
+        "description": "Land associated with temple properties.",
+        "common_issues": [
+          "Ownership Disputes",
+          "Encroachment"
+        ]
+      },
+      {
+        "land_type": "Waqf Land",
+        "description": "Land managed under Waqf administration.",
+        "common_issues": [
+          "Ownership Conflict",
+          "Encroachment"
+        ]
+      },
+      {
+        "land_type": "School Land",
+        "description": "Land allocated to schools and educational institutions.",
+        "common_issues": [
+          "Boundary Disputes",
+          "Unauthorized Occupation"
+        ]
+      },
+      {
+        "land_type": "Trust Land",
+        "description": "Land owned by charitable or private trusts.",
+        "common_issues": [
+          "Ownership Disputes",
+          "Management Issues"
+        ]
+      }
+    ]
+  }

@@ -1,0 +1,122 @@
+{
+    "emergency_cases": [
+      {
+        "issue": "Someone selling my land",
+        "priority": "HIGH",
+        "documents_needed": [
+          "Jamabandi",
+          "Registry",
+          "Identity Proof"
+        ],
+        "offices": [
+          "Sub Registrar Office",
+          "Police Station"
+        ],
+        "officials": [
+          "Sub Registrar",
+          "Police Officer"
+        ],
+        "recommended_action": [
+          "Verify ownership immediately",
+          "Check recent registrations",
+          "Report suspicious activity"
+        ]
+      },
+      {
+        "issue": "Fake registry created",
+        "priority": "HIGH",
+        "documents_needed": [
+          "Registry Copy",
+          "Jamabandi",
+          "Identity Proof"
+        ],
+        "offices": [
+          "Sub Registrar Office",
+          "Police Station"
+        ],
+        "officials": [
+          "Sub Registrar"
+        ],
+        "recommended_action": [
+          "Verify registry records",
+          "Compare ownership details"
+        ]
+      },
+      {
+        "issue": "Illegal possession happening",
+        "priority": "HIGH",
+        "documents_needed": [
+          "Jamabandi",
+          "Tatima",
+          "Registry"
+        ],
+        "offices": [
+          "Patwari Office",
+          "Police Station"
+        ],
+        "officials": [
+          "Patwari"
+        ],
+        "recommended_action": [
+          "Document possession details",
+          "Verify ownership"
+        ]
+      },
+      {
+        "issue": "Court notice received",
+        "priority": "HIGH",
+        "documents_needed": [
+          "Court Notice",
+          "Land Records"
+        ],
+        "offices": [
+          "Civil Court"
+        ],
+        "officials": [
+          "Advocate"
+        ],
+        "recommended_action": [
+          "Review notice",
+          "Prepare relevant documents"
+        ]
+      },
+      {
+        "issue": "Government acquisition notice",
+        "priority": "HIGH",
+        "documents_needed": [
+          "Acquisition Notice",
+          "Jamabandi",
+          "Registry"
+        ],
+        "offices": [
+          "DC Office"
+        ],
+        "officials": [
+          "DC"
+        ],
+        "recommended_action": [
+          "Verify compensation details",
+          "Review acquisition records"
+        ]
+      },
+      {
+        "issue": "Forgery detected",
+        "priority": "HIGH",
+        "documents_needed": [
+          "Registry",
+          "Identity Proof",
+          "Ownership Documents"
+        ],
+        "offices": [
+          "Police Station"
+        ],
+        "officials": [
+          "Police Officer"
+        ],
+        "recommended_action": [
+          "Collect evidence",
+          "File complaint"
+        ]
+      }
+    ]
+  }

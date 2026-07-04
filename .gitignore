@@ -28,3 +28,4 @@ node_modules/
 *.pdf
 *.png
 *.jpg
+/generated/prisma

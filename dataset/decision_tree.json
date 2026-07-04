@@ -1,0 +1,322 @@
+{
+    "decision_trees": [
+      {
+        "problem": "Brother occupied land",
+        "category": "Family Dispute",
+        "documents_needed": [
+          "Jamabandi",
+          "Mutation",
+          "Registry"
+        ],
+        "office": [
+          "Patwari Office",
+          "Tehsil Office"
+        ],
+        "official": [
+          "Patwari",
+          "Tehsildar"
+        ],
+        "next_steps": [
+          "Verify ownership records",
+          "Collect supporting documents",
+          "Request revenue verification"
+        ],
+        "escalation": "SDM Office"
+      },
+  
+      {
+        "problem": "Sister claiming share",
+        "category": "Inheritance",
+        "documents_needed": [
+          "Jamabandi",
+          "Legal Heir Certificate",
+          "Family Tree Certificate"
+        ],
+        "office": [
+          "Tehsil Office"
+        ],
+        "official": [
+          "Tehsildar"
+        ],
+        "next_steps": [
+          "Verify inheritance rights",
+          "Review ownership records"
+        ],
+        "escalation": "Civil Court"
+      },
+  
+      {
+        "problem": "Mutation pending",
+        "category": "Mutation",
+        "documents_needed": [
+          "Mutation Application",
+          "Registry",
+          "Jamabandi"
+        ],
+        "office": [
+          "Patwari Office",
+          "Tehsil Office"
+        ],
+        "official": [
+          "Patwari",
+          "Tehsildar"
+        ],
+        "next_steps": [
+          "Check mutation status",
+          "Verify application records"
+        ],
+        "escalation": "SDM Office"
+      },
+  
+      {
+        "problem": "Fake Registry",
+        "category": "Fraud",
+        "documents_needed": [
+          "Registry Copy",
+          "Jamabandi",
+          "Identity Proof"
+        ],
+        "office": [
+          "Sub Registrar Office",
+          "Police Station"
+        ],
+        "official": [
+          "Sub Registrar"
+        ],
+        "next_steps": [
+          "Verify registration records",
+          "Compare ownership records"
+        ],
+        "escalation": "Civil Court"
+      },
+  
+      {
+        "problem": "Neighbor occupied land",
+        "category": "Boundary Dispute",
+        "documents_needed": [
+          "Jamabandi",
+          "Tatima",
+          "Khasra Number"
+        ],
+        "office": [
+          "Patwari Office"
+        ],
+        "official": [
+          "Patwari",
+          "Kanungo"
+        ],
+        "next_steps": [
+          "Request demarcation",
+          "Verify land boundaries"
+        ],
+        "escalation": "Tehsil Office"
+      },
+  
+      {
+        "problem": "Illegal Possession",
+        "category": "Encroachment",
+        "documents_needed": [
+          "Jamabandi",
+          "Tatima"
+        ],
+        "office": [
+          "Patwari Office",
+          "Police Station"
+        ],
+        "official": [
+          "Patwari"
+        ],
+        "next_steps": [
+          "Verify ownership",
+          "Document possession details"
+        ],
+        "escalation": "Civil Court"
+      },
+  
+      {
+        "problem": "Lost Registry",
+        "category": "Missing Document",
+        "documents_needed": [
+          "Identity Proof",
+          "Property Details"
+        ],
+        "office": [
+          "Sub Registrar Office"
+        ],
+        "official": [
+          "Sub Registrar"
+        ],
+        "next_steps": [
+          "Apply for certified copy"
+        ],
+        "escalation": "Registrar Office"
+      },
+  
+      {
+        "problem": "Inheritance Transfer",
+        "category": "Succession",
+        "documents_needed": [
+          "Death Certificate",
+          "Legal Heir Certificate",
+          "Jamabandi"
+        ],
+        "office": [
+          "Tehsil Office"
+        ],
+        "official": [
+          "Tehsildar"
+        ],
+        "next_steps": [
+          "Verify heirs",
+          "Initiate mutation"
+        ],
+        "escalation": "SDM Office"
+      },
+  
+      {
+        "problem": "Shamlat Land Dispute",
+        "category": "Panchayat Land",
+        "documents_needed": [
+          "Village Records",
+          "Jamabandi"
+        ],
+        "office": [
+          "Panchayat Office",
+          "BDPO Office"
+        ],
+        "official": [
+          "Sarpanch",
+          "BDPO"
+        ],
+        "next_steps": [
+          "Verify land category",
+          "Review village records"
+        ],
+        "escalation": "District Administration"
+      },
+  
+      {
+        "problem": "Canal Water Dispute",
+        "category": "Farmer Issue",
+        "documents_needed": [
+          "Land Records"
+        ],
+        "office": [
+          "Irrigation Department"
+        ],
+        "official": [
+          "Irrigation Officer"
+        ],
+        "next_steps": [
+          "File irrigation complaint"
+        ],
+        "escalation": "District Administration"
+      },
+  
+      {
+        "problem": "Crop Compensation",
+        "category": "Farmer Issue",
+        "documents_needed": [
+          "Crop Details",
+          "Land Records"
+        ],
+        "office": [
+          "Agriculture Department"
+        ],
+        "official": [
+          "Agriculture Officer"
+        ],
+        "next_steps": [
+          "Apply for compensation"
+        ],
+        "escalation": "District Agriculture Office"
+      },
+  
+      {
+        "problem": "NRI Property Dispute",
+        "category": "NRI Issue",
+        "documents_needed": [
+          "Registry",
+          "Jamabandi",
+          "Power of Attorney"
+        ],
+        "office": [
+          "Tehsil Office",
+          "Sub Registrar Office"
+        ],
+        "official": [
+          "Tehsildar",
+          "Sub Registrar"
+        ],
+        "next_steps": [
+          "Verify ownership",
+          "Review POA"
+        ],
+        "escalation": "Civil Court"
+      },
+  
+      {
+        "problem": "Land Acquisition Notice",
+        "category": "Government Acquisition",
+        "documents_needed": [
+          "Notice",
+          "Jamabandi",
+          "Registry"
+        ],
+        "office": [
+          "DC Office"
+        ],
+        "official": [
+          "DC"
+        ],
+        "next_steps": [
+          "Review acquisition notice",
+          "Verify compensation details"
+        ],
+        "escalation": "Revenue Court"
+      },
+  
+      {
+        "problem": "Land Mortgaged",
+        "category": "Loan Issue",
+        "documents_needed": [
+          "Loan Documents",
+          "Registry"
+        ],
+        "office": [
+          "Bank",
+          "Tehsil Office"
+        ],
+        "official": [
+          "Bank Officer"
+        ],
+        "next_steps": [
+          "Verify mortgage status"
+        ],
+        "escalation": "Court"
+      },
+  
+      {
+        "problem": "Someone Selling My Land",
+        "category": "Emergency",
+        "documents_needed": [
+          "Jamabandi",
+          "Registry",
+          "Identity Proof"
+        ],
+        "office": [
+          "Sub Registrar Office",
+          "Police Station"
+        ],
+        "official": [
+          "Sub Registrar"
+        ],
+        "next_steps": [
+          "Verify ownership immediately",
+          "Monitor transactions"
+        ],
+        "priority": "high",
+        "escalation": "Court"
+      }
+    ]
+  }

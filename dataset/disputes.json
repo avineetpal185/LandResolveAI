@@ -1,0 +1,229 @@
+{
+    "dispute_categories": [
+      {
+        "category": "Family Disputes",
+        "problems": [
+          "Brother occupied land",
+          "Sister claiming share",
+          "Father transferred land",
+          "Mother inheritance",
+          "Grandfather property dispute",
+          "Joint family property",
+          "Partition dispute",
+          "Ancestral property dispute",
+          "Self acquired property dispute",
+          "Widow rights dispute",
+          "Legal heir dispute",
+          "Will dispute",
+          "Property division dispute",
+          "Multiple heirs dispute",
+          "Missing heir dispute"
+        ]
+      },
+      {
+        "category": "Registry Problems",
+        "problems": [
+          "Registry not found",
+          "Registry mismatch",
+          "Fake registry",
+          "Duplicate registry",
+          "Registry correction",
+          "Registry cancelled",
+          "Wrong owner in registry",
+          "Registry verification",
+          "Registry fraud"
+        ]
+      },
+      {
+        "category": "Mutation Problems",
+        "problems": [
+          "Mutation pending",
+          "Mutation rejected",
+          "Mutation correction",
+          "Mutation after death",
+          "Mutation after registry",
+          "Mutation status issue",
+          "Ownership transfer issue",
+          "Mutation not updated"
+        ]
+      },
+      {
+        "category": "Boundary Problems",
+        "problems": [
+          "Neighbor occupied land",
+          "Boundary wall dispute",
+          "Fence dispute",
+          "Wrong measurement",
+          "Boundary shifted",
+          "Survey mismatch",
+          "Road encroachment",
+          "Missing land portion"
+        ]
+      },
+      {
+        "category": "Encroachment Cases",
+        "problems": [
+          "Illegal possession",
+          "Government land encroachment",
+          "Panchayat land encroachment",
+          "Shamlat land encroachment",
+          "Neighbor encroachment",
+          "Agricultural land encroachment"
+        ]
+      },
+      {
+        "category": "Possession Disputes",
+        "problems": [
+          "Physical possession dispute",
+          "Legal possession dispute",
+          "Possession not transferred",
+          "Possession certificate issue",
+          "Kabza dispute"
+        ]
+      },
+      {
+        "category": "Fraud Cases",
+        "problems": [
+          "Fake mutation",
+          "Fake registry",
+          "Fake Jamabandi",
+          "Fake ownership claim",
+          "Forged signature",
+          "Fake power of attorney",
+          "Double sale fraud",
+          "Land scam",
+          "Impersonation"
+        ]
+      },
+      {
+        "category": "NRI Property Issues",
+        "problems": [
+          "NRI property dispute",
+          "NRI illegal possession",
+          "NRI inheritance issue",
+          "NRI registry issue",
+          "NRI tenant dispute",
+          "NRI land sale issue",
+          "NRI power of attorney issue"
+        ]
+      },
+      {
+        "category": "Farmer Issues",
+        "problems": [
+          "Crop damage",
+          "Crop compensation",
+          "Canal water dispute",
+          "Tube well dispute",
+          "Subsidy issue",
+          "Insurance claim issue",
+          "Electricity connection issue",
+          "Farmer compensation dispute"
+        ]
+      },
+      {
+        "category": "Panchayat Land Issues",
+        "problems": [
+          "Shamlat land dispute",
+          "Panchayat land possession",
+          "Common village land dispute",
+          "Illegal use of panchayat land",
+          "Village common land dispute"
+        ]
+      },
+      {
+        "category": "Court Related Cases",
+        "problems": [
+          "Civil suit",
+          "Stay order",
+          "Injunction",
+          "Appeal",
+          "Revenue appeal",
+          "Partition suit",
+          "Property case",
+          "Land case",
+          "Court decree issue"
+        ]
+      },
+      {
+        "category": "Government Acquisition",
+        "problems": [
+          "Highway acquisition",
+          "Railway acquisition",
+          "Government acquisition",
+          "Compensation dispute",
+          "Land acquisition notice"
+        ]
+      },
+      {
+        "category": "Loan And Mortgage",
+        "problems": [
+          "Land mortgaged",
+          "Bank loan on land",
+          "Mortgage release",
+          "Loan dispute",
+          "Bank possession notice",
+          "Agricultural loan issue"
+        ]
+      },
+      {
+        "category": "Auction And Recovery",
+        "problems": [
+          "Bank auction",
+          "Government auction",
+          "Recovery proceedings",
+          "Seized property",
+          "Auction notice"
+        ]
+      },
+      {
+        "category": "Missing Documents",
+        "problems": [
+          "Lost registry",
+          "Lost Jamabandi",
+          "Lost mutation papers",
+          "Lost sale deed",
+          "Duplicate copy request"
+        ]
+      },
+      {
+        "category": "Police Related Property Issues",
+        "problems": [
+          "FIR for land fraud",
+          "Forgery complaint",
+          "Trespassing complaint",
+          "Illegal occupation complaint",
+          "Criminal intimidation over land"
+        ]
+      },
+      {
+        "category": "Construction Issues",
+        "problems": [
+          "Building on disputed land",
+          "Unauthorized construction",
+          "Boundary wall construction dispute",
+          "Construction permission issue"
+        ]
+      },
+      {
+        "category": "Land Use Change",
+        "problems": [
+          "Agricultural to residential conversion",
+          "Residential to commercial conversion",
+          "Land conversion issue",
+          "CLU issue",
+          "Land use violation"
+        ]
+      },
+      {
+        "category": "Emergency Cases",
+        "problems": [
+          "Someone selling my land",
+          "Fake registry created",
+          "Illegal possession happening",
+          "Government notice received",
+          "Court notice received",
+          "Urgent ownership dispute"
+        ]
+      }
+    ]
+  }

@@ -1,0 +1,129 @@
+{
+    "conversation_examples": [
+      {
+        "user_query": "My brother took my land.",
+        "intent": "family_dispute",
+        "category": "Family Dispute"
+      },
+      {
+        "user_query": "My father died and mutation is not done.",
+        "intent": "inheritance_case",
+        "category": "Succession"
+      },
+      {
+        "user_query": "My sister wants share in property.",
+        "intent": "family_dispute",
+        "category": "Inheritance"
+      },
+      {
+        "user_query": "My neighbor occupied my field.",
+        "intent": "boundary_dispute",
+        "category": "Encroachment"
+      },
+      {
+        "user_query": "Someone changed ownership of my land.",
+        "intent": "fraud_case",
+        "category": "Ownership Fraud"
+      },
+      {
+        "user_query": "My registry is fake.",
+        "intent": "fraud_case",
+        "category": "Registry Fraud"
+      },
+      {
+        "user_query": "Mutation is pending.",
+        "intent": "mutation_problem",
+        "category": "Mutation"
+      },
+      {
+        "user_query": "My mutation got rejected.",
+        "intent": "mutation_problem",
+        "category": "Mutation"
+      },
+      {
+        "user_query": "I lost my registry.",
+        "intent": "missing_document",
+        "category": "Document Issue"
+      },
+      {
+        "user_query": "I need Jamabandi copy.",
+        "intent": "document_request",
+        "category": "Land Records"
+      },
+      {
+        "user_query": "How can I get Fard copy?",
+        "intent": "document_request",
+        "category": "Land Records"
+      },
+      {
+        "user_query": "Patwari is not helping.",
+        "intent": "official_complaint",
+        "category": "Revenue Administration"
+      },
+      {
+        "user_query": "Kanungo is delaying my work.",
+        "intent": "official_complaint",
+        "category": "Revenue Administration"
+      },
+      {
+        "user_query": "Someone is selling my land.",
+        "intent": "emergency_case",
+        "category": "Emergency"
+      },
+      {
+        "user_query": "Court notice received.",
+        "intent": "court_case",
+        "category": "Court Matter"
+      },
+      {
+        "user_query": "Government acquired my land.",
+        "intent": "government_acquisition",
+        "category": "Land Acquisition"
+      },
+      {
+        "user_query": "I have crop damage.",
+        "intent": "farmer_issue",
+        "category": "Agriculture"
+      },
+      {
+        "user_query": "Canal water is not reaching my field.",
+        "intent": "farmer_issue",
+        "category": "Irrigation"
+      },
+      {
+        "user_query": "I want to verify ownership.",
+        "intent": "ownership_verification",
+        "category": "Ownership"
+      },
+      {
+        "user_query": "My land measurement is wrong.",
+        "intent": "boundary_dispute",
+        "category": "Demarcation"
+      },
+      {
+        "user_query": "Land is mortgaged to bank.",
+        "intent": "loan_mortgage_issue",
+        "category": "Loan"
+      },
+      {
+        "user_query": "I need legal heir certificate.",
+        "intent": "inheritance_case",
+        "category": "Succession"
+      },
+      {
+        "user_query": "Shamlat land dispute.",
+        "intent": "panchayat_land_issue",
+        "category": "Panchayat Land"
+      },
+      {
+        "user_query": "NRI property dispute.",
+        "intent": "nri_property_issue",
+        "category": "NRI Property"
+      },
+      {
+        "user_query": "Power of attorney is fake.",
+        "intent": "fraud_case",
+        "category": "POA Fraud"
+      }
+    ]
+  }

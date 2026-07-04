@@ -1,0 +1,194 @@
+{
+    "revenue_officials": [
+      {
+        "official_name": "Patwari",
+        "department": "Revenue",
+        "responsibilities": [
+          "Maintain Jamabandi",
+          "Maintain Khasra Records",
+          "Process Mutation Entries",
+          "Land Verification",
+          "Field Inspection",
+          "Ownership Records"
+        ],
+        "reports_to": "Kanungo"
+      },
+      {
+        "official_name": "Kanungo",
+        "department": "Revenue",
+        "responsibilities": [
+          "Supervise Patwaris",
+          "Verify Revenue Records",
+          "Land Record Inspection",
+          "Mutation Verification"
+        ],
+        "reports_to": "Tehsildar"
+      },
+      {
+        "official_name": "Tehsildar",
+        "department": "Revenue",
+        "responsibilities": [
+          "Revenue Administration",
+          "Mutation Approval",
+          "Partition Matters",
+          "Land Revenue Collection",
+          "Land Dispute Resolution"
+        ],
+        "reports_to": "SDM"
+      },
+      {
+        "official_name": "Naib Tehsildar",
+        "department": "Revenue",
+        "responsibilities": [
+          "Revenue Administration Support",
+          "Mutation Cases",
+          "Land Record Verification",
+          "Revenue Proceedings"
+        ],
+        "reports_to": "Tehsildar"
+      },
+      {
+        "official_name": "SDM",
+        "department": "Administration",
+        "responsibilities": [
+          "Revenue Appeals",
+          "Administrative Orders",
+          "Land Dispute Hearings",
+          "Sub Division Administration"
+        ],
+        "reports_to": "DC"
+      },
+      {
+        "official_name": "DC",
+        "department": "District Administration",
+        "responsibilities": [
+          "District Revenue Administration",
+          "Public Grievances",
+          "Land Acquisition",
+          "District Governance"
+        ],
+        "reports_to": "State Government"
+      },
+      {
+        "official_name": "Collector",
+        "department": "Revenue",
+        "responsibilities": [
+          "Land Revenue Administration",
+          "Revenue Recovery",
+          "Revenue Appeals"
+        ],
+        "reports_to": "State Government"
+      },
+      {
+        "official_name": "Revenue Officer",
+        "department": "Revenue",
+        "responsibilities": [
+          "Revenue Proceedings",
+          "Land Verification",
+          "Mutation Related Work"
+        ],
+        "reports_to": "Tehsildar"
+      },
+      {
+        "official_name": "Sarpanch",
+        "department": "Panchayat",
+        "responsibilities": [
+          "Village Governance",
+          "Panchayat Matters",
+          "Village Development",
+          "Local Disputes"
+        ],
+        "reports_to": "BDPO"
+      },
+      {
+        "official_name": "Panch",
+        "department": "Panchayat",
+        "responsibilities": [
+          "Village Representation",
+          "Local Administration",
+          "Village Dispute Support"
+        ],
+        "reports_to": "Sarpanch"
+      },
+      {
+        "official_name": "BDPO",
+        "department": "Rural Development",
+        "responsibilities": [
+          "Panchayat Supervision",
+          "Village Development",
+          "Rural Administration"
+        ],
+        "reports_to": "District Administration"
+      },
+      {
+        "official_name": "Registrar",
+        "department": "Registration",
+        "responsibilities": [
+          "Property Registration",
+          "Sale Deed Registration",
+          "Gift Deed Registration",
+          "Registry Verification"
+        ],
+        "reports_to": "State Registration Department"
+      },
+      {
+        "official_name": "Sub Registrar",
+        "department": "Registration",
+        "responsibilities": [
+          "Property Registry",
+          "Document Registration",
+          "Ownership Transfer Registration"
+        ],
+        "reports_to": "Registrar"
+      },
+      {
+        "official_name": "Village Secretary",
+        "department": "Panchayat",
+        "responsibilities": [
+          "Village Records",
+          "Certificates",
+          "Panchayat Documentation"
+        ],
+        "reports_to": "Sarpanch"
+      },
+      {
+        "official_name": "Lambardar",
+        "department": "Village Administration",
+        "responsibilities": [
+          "Village Revenue Assistance",
+          "Local Verification",
+          "Public Coordination"
+        ],
+        "reports_to": "Patwari"
+      },
+      {
+        "official_name": "Court Reader",
+        "department": "Judicial",
+        "responsibilities": [
+          "Court File Management",
+          "Case Records",
+          "Court Proceedings Assistance"
+        ],
+        "reports_to": "Judge"
+      },
+      {
+        "official_name": "Revenue Inspector",
+        "department": "Revenue",
+        "responsibilities": [
+          "Revenue Inspection",
+          "Land Verification",
+          "Record Checking"
+        ],
+        "reports_to": "Tehsildar"
+      }
+    ],
+  
+    "abbreviations": {
+      "DC": "Deputy Commissioner",
+      "SDM": "Sub Divisional Magistrate",
+      "BDPO": "Block Development and Panchayat Officer",
+      "POA": "Power of Attorney",
+      "NOC": "No Objection Certificate",
+      "FIR": "First Information Report"
+    }
+  }

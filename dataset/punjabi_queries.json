@@ -1,0 +1,116 @@
+{
+    "punjabi_queries": [
+      {
+        "query": "mera bhra meri zameen te kabza kar gaya",
+        "intent": "family_dispute"
+      },
+      {
+        "query": "meri bhain zameen vich hissa mangdi aa",
+        "intent": "family_dispute"
+      },
+      {
+        "query": "mere pita ji di death ho gayi te mutation nahi hoya",
+        "intent": "inheritance_case"
+      },
+      {
+        "query": "meri registry gum ho gayi",
+        "intent": "missing_document"
+      },
+      {
+        "query": "jamabandi di copy chaidi aa",
+        "intent": "document_request"
+      },
+      {
+        "query": "fard di copy kitho milegi",
+        "intent": "document_request"
+      },
+      {
+        "query": "mera intkal pending aa",
+        "intent": "mutation_problem"
+      },
+      {
+        "query": "mutation reject ho gayi",
+        "intent": "mutation_problem"
+      },
+      {
+        "query": "patwari sun nahi reha",
+        "intent": "official_complaint"
+      },
+      {
+        "query": "kanungo record verify nahi kar reha",
+        "intent": "official_complaint"
+      },
+      {
+        "query": "neighbor ne meri zameen te kabza kar lita",
+        "intent": "boundary_dispute"
+      },
+      {
+        "query": "sadi zameen di measurement galat aa",
+        "intent": "boundary_dispute"
+      },
+      {
+        "query": "meri registry fake lagdi aa",
+        "intent": "fraud_case"
+      },
+      {
+        "query": "kise ne fake mutation karva layi",
+        "intent": "fraud_case"
+      },
+      {
+        "query": "meri zameen di ownership verify karni aa",
+        "intent": "ownership_verification"
+      },
+      {
+        "query": "jamabandi online kive dekhiye",
+        "intent": "document_request"
+      },
+      {
+        "query": "zameen da khasra number kive pata lagge",
+        "intent": "ownership_verification"
+      },
+      {
+        "query": "sarkar meri zameen acquire kar rahi aa",
+        "intent": "government_acquisition"
+      },
+      {
+        "query": "bank ne zameen mortgage kar layi",
+        "intent": "loan_mortgage_issue"
+      },
+      {
+        "query": "court da notice aaya aa",
+        "intent": "court_case"
+      },
+      {
+        "query": "stay order mil gaya",
+        "intent": "court_case"
+      },
+      {
+        "query": "crop damage da compensation nahi milya",
+        "intent": "farmer_issue"
+      },
+      {
+        "query": "canal da paani nahi aa reha",
+        "intent": "farmer_issue"
+      },
+      {
+        "query": "tubewell connection di problem aa",
+        "intent": "farmer_issue"
+      },
+      {
+        "query": "meri zameen da hissa nahi mil reha",
+        "intent": "partition_dispute"
+      },
+      {
+        "query": "sadi ancestral property da dispute aa",
+        "intent": "family_dispute"
+      },
+      {
+        "query": "koi meri zameen vechan di koshish kar reha",
+        "intent": "emergency_case"
+      },
+      {
+        "query": "illegal kabza ho reha aa",
+        "intent": "emergency_case"
+      }
+    ]
+  }

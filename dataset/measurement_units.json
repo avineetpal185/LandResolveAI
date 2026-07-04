@@ -1,0 +1,63 @@
+{
+    "measurement_units": [
+      {
+        "unit": "Kanal",
+        "equivalent": {
+          "marla": 20,
+          "square_yards": 605
+        }
+      },
+      {
+        "unit": "Marla",
+        "equivalent": {
+          "square_feet": 272.25,
+          "square_yards": 30.25
+        }
+      },
+      {
+        "unit": "Acre",
+        "equivalent": {
+          "kanal": 8,
+          "marla": 160,
+          "square_feet": 43560
+        }
+      },
+      {
+        "unit": "Hectare",
+        "equivalent": {
+          "acre": 2.471
+        }
+      },
+      {
+        "unit": "Bigha",
+        "equivalent": {
+          "varies_by_region": true
+        }
+      },
+      {
+        "unit": "Square Yard"
+      },
+      {
+        "unit": "Square Feet"
+      }
+    ],
+  
+    "faq": [
+      {
+        "question": "How many marlas are in one kanal?",
+        "answer": "One kanal equals 20 marlas."
+      },
+      {
+        "question": "How many kanals are in one acre?",
+        "answer": "One acre equals 8 kanals."
+      },
+      {
+        "question": "How many square feet are in one marla?",
+        "answer": "One marla is approximately 272.25 square feet."
+      },
+      {
+        "question": "How many marlas are in one acre?",
+        "answer": "One acre equals 160 marlas."
+      }
+    ]
+  }

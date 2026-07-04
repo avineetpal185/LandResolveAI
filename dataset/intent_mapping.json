@@ -1,0 +1,196 @@
+{
+    "intents": [
+      {
+        "intent": "family_dispute",
+        "examples": [
+          "My brother took my land",
+          "Brother occupied my property",
+          "Sister wants share in land",
+          "Family property dispute",
+          "Ancestral property dispute",
+          "Father transferred land",
+          "Inheritance issue",
+          "Legal heir dispute",
+          "Property division issue",
+          "Joint family property problem"
+        ]
+      },
+  
+      {
+        "intent": "mutation_problem",
+        "examples": [
+          "Mutation pending",
+          "Mutation rejected",
+          "Mutation not updated",
+          "Mutation after death",
+          "Mutation correction",
+          "Intkal pending",
+          "Inteqal issue",
+          "Ownership transfer issue"
+        ]
+      },
+  
+      {
+        "intent": "registry_problem",
+        "examples": [
+          "Registry not found",
+          "Fake registry",
+          "Registry mismatch",
+          "Duplicate registry",
+          "Registry cancelled",
+          "Wrong owner in registry",
+          "Registry verification"
+        ]
+      },
+  
+      {
+        "intent": "boundary_dispute",
+        "examples": [
+          "Neighbor occupied land",
+          "Boundary dispute",
+          "Wrong measurement",
+          "Fence dispute",
+          "Boundary wall dispute",
+          "Road encroachment",
+          "Survey mismatch"
+        ]
+      },
+  
+      {
+        "intent": "encroachment",
+        "examples": [
+          "Illegal possession",
+          "Kabza on my land",
+          "Someone occupied my land",
+          "Encroachment issue",
+          "Government land occupied",
+          "Shamlat land occupied"
+        ]
+      },
+  
+      {
+        "intent": "document_request",
+        "examples": [
+          "Need Jamabandi copy",
+          "Need Fard copy",
+          "Need Registry copy",
+          "Need Mutation copy",
+          "Need land records",
+          "Get ownership record"
+        ]
+      },
+  
+      {
+        "intent": "ownership_verification",
+        "examples": [
+          "Check ownership",
+          "Verify ownership",
+          "Who owns this land",
+          "Ownership details"
+        ]
+      },
+  
+      {
+        "intent": "inheritance_case",
+        "examples": [
+          "Father died",
+          "Mother died",
+          "Grandfather died",
+          "Owner died without will",
+          "Legal heir certificate",
+          "Inheritance transfer"
+        ]
+      },
+  
+      {
+        "intent": "nri_property_issue",
+        "examples": [
+          "NRI property dispute",
+          "NRI inheritance",
+          "NRI tenant issue",
+          "NRI registry issue",
+          "NRI illegal possession"
+        ]
+      },
+  
+      {
+        "intent": "fraud_case",
+        "examples": [
+          "Fake mutation",
+          "Fake registry",
+          "Fake Jamabandi",
+          "Forged signature",
+          "Double sale fraud",
+          "Land scam"
+        ]
+      },
+  
+      {
+        "intent": "court_case",
+        "examples": [
+          "Civil suit",
+          "Stay order",
+          "Appeal",
+          "Court decree",
+          "Property case",
+          "Land case"
+        ]
+      },
+  
+      {
+        "intent": "farmer_issue",
+        "examples": [
+          "Crop damage",
+          "Canal water dispute",
+          "Subsidy issue",
+          "Tube well dispute",
+          "Farmer compensation",
+          "Insurance claim"
+        ]
+      },
+  
+      {
+        "intent": "government_acquisition",
+        "examples": [
+          "Highway acquisition",
+          "Railway acquisition",
+          "Government acquisition",
+          "Land acquisition notice",
+          "Compensation dispute"
+        ]
+      },
+  
+      {
+        "intent": "loan_mortgage_issue",
+        "examples": [
+          "Land mortgaged",
+          "Bank loan on land",
+          "Mortgage release",
+          "Bank possession notice",
+          "Loan dispute"
+        ]
+      },
+  
+      {
+        "intent": "missing_document",
+        "examples": [
+          "Lost registry",
+          "Lost Jamabandi",
+          "Lost mutation papers",
+          "Lost sale deed",
+          "Need duplicate copy"
+        ]
+      },
+  
+      {
+        "intent": "emergency_case",
+        "examples": [
+          "Someone selling my land",
+          "Illegal possession happening",
+          "Court notice received",
+          "Government notice received",
+          "Urgent ownership issue"
+        ]
+      }
+    ]
+  }

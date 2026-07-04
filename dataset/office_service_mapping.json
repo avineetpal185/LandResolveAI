@@ -1,0 +1,274 @@
+{
+    "office_service_mapping": [
+      {
+        "service": "Mutation",
+        "offices": [
+          "Patwari Office",
+          "Tehsil Office"
+        ],
+        "officials": [
+          "Patwari",
+          "Tehsildar"
+        ]
+      },
+      {
+        "service": "Mutation After Death",
+        "offices": [
+          "Patwari Office",
+          "Tehsil Office"
+        ],
+        "officials": [
+          "Patwari",
+          "Tehsildar"
+        ]
+      },
+      {
+        "service": "Jamabandi Copy",
+        "offices": [
+          "Patwari Office",
+          "Fard Kendra"
+        ],
+        "officials": [
+          "Patwari"
+        ]
+      },
+      {
+        "service": "Fard Copy",
+        "offices": [
+          "Fard Kendra",
+          "Patwari Office"
+        ],
+        "officials": [
+          "Patwari"
+        ]
+      },
+      {
+        "service": "Registry",
+        "offices": [
+          "Sub Registrar Office"
+        ],
+        "officials": [
+          "Sub Registrar"
+        ]
+      },
+      {
+        "service": "Sale Deed Registration",
+        "offices": [
+          "Sub Registrar Office"
+        ],
+        "officials": [
+          "Sub Registrar"
+        ]
+      },
+      {
+        "service": "Gift Deed Registration",
+        "offices": [
+          "Sub Registrar Office"
+        ],
+        "officials": [
+          "Sub Registrar"
+        ]
+      },
+      {
+        "service": "Power Of Attorney Registration",
+        "offices": [
+          "Sub Registrar Office"
+        ],
+        "officials": [
+          "Sub Registrar"
+        ]
+      },
+      {
+        "service": "Ownership Verification",
+        "offices": [
+          "Patwari Office"
+        ],
+        "officials": [
+          "Patwari",
+          "Kanungo"
+        ]
+      },
+      {
+        "service": "Demarcation",
+        "offices": [
+          "Patwari Office",
+          "Tehsil Office"
+        ],
+        "officials": [
+          "Patwari",
+          "Kanungo"
+        ]
+      },
+      {
+        "service": "Boundary Verification",
+        "offices": [
+          "Patwari Office"
+        ],
+        "officials": [
+          "Patwari"
+        ]
+      },
+      {
+        "service": "Partition",
+        "offices": [
+          "Tehsil Office"
+        ],
+        "officials": [
+          "Tehsildar"
+        ]
+      },
+      {
+        "service": "Inheritance Transfer",
+        "offices": [
+          "Tehsil Office"
+        ],
+        "officials": [
+          "Tehsildar"
+        ]
+      },
+      {
+        "service": "Legal Heir Certificate",
+        "offices": [
+          "Tehsil Office",
+          "Suwidha Kendra"
+        ],
+        "officials": [
+          "Tehsildar"
+        ]
+      },
+      {
+        "service": "Property Tax",
+        "offices": [
+          "Municipal Corporation",
+          "Municipal Council"
+        ],
+        "officials": [
+          "Municipal Officer"
+        ]
+      },
+      {
+        "service": "Building Approval",
+        "offices": [
+          "Municipal Corporation"
+        ],
+        "officials": [
+          "Municipal Officer"
+        ]
+      },
+      {
+        "service": "Panchayat Land Complaint",
+        "offices": [
+          "Panchayat Office",
+          "BDPO Office"
+        ],
+        "officials": [
+          "Sarpanch",
+          "BDPO"
+        ]
+      },
+      {
+        "service": "Shamlat Land Issue",
+        "offices": [
+          "Panchayat Office",
+          "BDPO Office"
+        ],
+        "officials": [
+          "Sarpanch",
+          "BDPO"
+        ]
+      },
+      {
+        "service": "Crop Compensation",
+        "offices": [
+          "Agriculture Department"
+        ],
+        "officials": [
+          "Agriculture Officer"
+        ]
+      },
+      {
+        "service": "Farmer Subsidy",
+        "offices": [
+          "Agriculture Department"
+        ],
+        "officials": [
+          "Agriculture Officer"
+        ]
+      },
+      {
+        "service": "Canal Water Complaint",
+        "offices": [
+          "Irrigation Department"
+        ],
+        "officials": [
+          "Irrigation Officer"
+        ]
+      },
+      {
+        "service": "Electricity Connection",
+        "offices": [
+          "Electricity Board Office"
+        ],
+        "officials": [
+          "Electricity Officer"
+        ]
+      },
+      {
+        "service": "Water Supply Complaint",
+        "offices": [
+          "Water Supply Department"
+        ],
+        "officials": [
+          "Water Supply Officer"
+        ]
+      },
+      {
+        "service": "Land Acquisition Issue",
+        "offices": [
+          "DC Office"
+        ],
+        "officials": [
+          "DC"
+        ]
+      },
+      {
+        "service": "Revenue Appeal",
+        "offices": [
+          "SDM Office",
+          "Revenue Court"
+        ],
+        "officials": [
+          "SDM"
+        ]
+      },
+      {
+        "service": "Civil Property Dispute",
+        "offices": [
+          "Civil Court"
+        ],
+        "officials": [
+          "Judge"
+        ]
+      },
+      {
+        "service": "Land Fraud Complaint",
+        "offices": [
+          "Police Station",
+          "Sub Registrar Office"
+        ],
+        "officials": [
+          "Police Officer",
+          "Sub Registrar"
+        ]
+      },
+      {
+        "service": "Forgery Complaint",
+        "offices": [
+          "Police Station"
+        ],
+        "officials": [
+          "Police Officer"
+        ]
+      }
+    ]
+  }

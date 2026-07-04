@@ -1,0 +1,145 @@
+{
+    "action_mappings": [
+      {
+        "problem": "Brother occupied land",
+        "category": "Family Dispute",
+        "documents_needed": [
+          "Jamabandi",
+          "Mutation",
+          "Registry"
+        ],
+        "offices": [
+          "Patwari Office",
+          "Tehsil Office"
+        ],
+        "officials": [
+          "Patwari",
+          "Tehsildar"
+        ],
+        "next_steps": [
+          "Verify ownership records",
+          "Collect supporting documents",
+          "Approach revenue authorities"
+        ]
+      },
+      {
+        "problem": "Mutation pending",
+        "category": "Mutation Problem",
+        "documents_needed": [
+          "Mutation Application",
+          "Registry",
+          "Jamabandi"
+        ],
+        "offices": [
+          "Patwari Office",
+          "Tehsil Office"
+        ],
+        "officials": [
+          "Patwari",
+          "Tehsildar"
+        ],
+        "next_steps": [
+          "Check mutation status",
+          "Verify submitted documents"
+        ]
+      },
+      {
+        "problem": "Lost Registry",
+        "category": "Missing Document",
+        "documents_needed": [
+          "Identity Proof",
+          "Property Details"
+        ],
+        "offices": [
+          "Sub Registrar Office"
+        ],
+        "officials": [
+          "Sub Registrar"
+        ],
+        "next_steps": [
+          "Apply for certified copy",
+          "Verify ownership records"
+        ]
+      },
+      {
+        "problem": "Neighbor occupied land",
+        "category": "Boundary Dispute",
+        "documents_needed": [
+          "Jamabandi",
+          "Tatima",
+          "Khasra Details"
+        ],
+        "offices": [
+          "Patwari Office",
+          "Tehsil Office"
+        ],
+        "officials": [
+          "Patwari",
+          "Kanungo"
+        ],
+        "next_steps": [
+          "Request demarcation",
+          "Verify land boundaries"
+        ]
+      },
+      {
+        "problem": "Fake Registry",
+        "category": "Fraud",
+        "documents_needed": [
+          "Registry Copy",
+          "Jamabandi",
+          "Identity Proof"
+        ],
+        "offices": [
+          "Sub Registrar Office",
+          "Police Station"
+        ],
+        "officials": [
+          "Sub Registrar"
+        ],
+        "next_steps": [
+          "Verify registration details",
+          "File complaint if necessary"
+        ]
+      },
+      {
+        "problem": "Inheritance Dispute",
+        "category": "Succession",
+        "documents_needed": [
+          "Death Certificate",
+          "Legal Heir Certificate",
+          "Jamabandi"
+        ],
+        "offices": [
+          "Tehsil Office"
+        ],
+        "officials": [
+          "Tehsildar"
+        ],
+        "next_steps": [
+          "Verify legal heirs",
+          "Initiate inheritance mutation"
+        ]
+      },
+      {
+        "problem": "Shamlat Land Dispute",
+        "category": "Panchayat Land",
+        "documents_needed": [
+          "Jamabandi",
+          "Village Records"
+        ],
+        "offices": [
+          "Panchayat Office",
+          "BDPO Office"
+        ],
+        "officials": [
+          "Sarpanch",
+          "BDPO"
+        ],
+        "next_steps": [
+          "Verify ownership category",
+          "Review village records"
+        ]
+      }
+    ]
+  }
