@@ -276,6 +276,7 @@ export default function Home() {
   const recognitionRef = useRef<any>(null);
   const finalTranscriptRef = useRef("");
   const [isListening, setIsListening] = useState(false);
+  const isListeningRef = useRef(false);
   const [audioLevels, setAudioLevels] = useState<number[]>(
     Array(50).fill(10)
   );
@@ -939,6 +940,7 @@ export default function Home() {
 
     recognition.onstart = async () => {
       setIsListening(true);
+      isListeningRef.current = true;  
       setVoiceMode(true);
 
       const isMobileDevice = /Android|iPhone|iPad/i.test(navigator.userAgent);
@@ -1000,12 +1002,13 @@ export default function Home() {
 
       // On mobile, recognition auto-stops after each pause.
       // If the user hasn't manually stopped/confirmed, restart it so it feels continuous.
-      if (isMobileDevice && recognitionRef.current === recognition && isListening) {
+      if (isMobileDevice && recognitionRef.current === recognition && isListeningRef.current) {
         recognition.start();
         return;
       }
 
       setIsListening(false);
+      isListeningRef.current = false; 
       setVoiceMode(false);
     };
 
@@ -1077,11 +1080,13 @@ export default function Home() {
   };
 
   const stopRecording = () => {
+    isListeningRef.current = false;  
     finalTranscriptRef.current = "";
     recognitionRef.current?.stop();
   };
   
   const acceptRecording = () => {
+    isListeningRef.current = false;
     setInput(recordingText);
     finalTranscriptRef.current = "";
     recognitionRef.current?.stop();
