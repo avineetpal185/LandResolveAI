@@ -270,6 +270,7 @@ export default function Home() {
   const [welcomeModalName, setWelcomeModalName] = useState<string | null>(null);
   const [uploadedPdfText, setUploadedPdfText] = useState("");
   const [uploadedFileName, setUploadedFileName] = useState("");
+  const [isExtractingPdf, setIsExtractingPdf] = useState(false);
   const [input, setInput] = useState("");
   const [recordingText, setRecordingText] = useState("");
   const recognitionRef = useRef<any>(null);
@@ -1240,10 +1241,16 @@ export default function Home() {
 
     if (!file) return;
 
+    setIsExtractingPdf(true);
+    setUploadedFileName(file.name);
+    setUploadedPdfText("");
+
     try {
       const formData = new FormData();
       formData.append("file", file);
       console.log("CALLING EXTRACT API");
+
+
 
       const response = await fetch(
         "https://landresolveai.onrender.com/extract-text",
@@ -1259,29 +1266,24 @@ export default function Home() {
       const data = await response.json();
       console.log("DATA:", data);
 
+
       const extractedText =
         data.text || data.extracted_text || "";
 
       setUploadedPdfText(extractedText);
-      setUploadedFileName(file.name);
-
-
-
       setInput("");
-
-      //setInput(
-      //`📄 [Extracted from: ${file.name}]\n\n${extractedText}`
-      //);
-
 
     } catch (error) {
       console.error("FETCH ERROR:", error);
       alert("Failed to extract text");
+      setUploadedFileName("");
     }
+    setIsExtractingPdf(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
+
 
   const currentThinkingSteps = isAIImageThinking ? AI_IMAGE_THINKING_STEPS : THINKING_STEPS;
 
@@ -2745,7 +2747,7 @@ export default function Home() {
           {/* INPUT BAR — mic and upload buttons removed */}
           <div className="input-area">
             <div className="input-inner">
-              
+
               {uploadedFileName && (
                 <div
                   style={{
@@ -2775,25 +2777,29 @@ export default function Home() {
                     📄
                   </div>
 
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <div
                       style={{
                         color: "#fff",
                         fontWeight: 600,
                         fontSize: "14px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
                       }}
                     >
                       {uploadedFileName}
                     </div>
 
+
                     <div
                       style={{
-                        color: "#94a3b8",
+                        color: isExtractingPdf ? "#facc15" : "#94a3b8",
                         fontSize: "12px",
                         marginTop: "3px",
                       }}
                     >
-                      PDF Document
+                      {isExtractingPdf ? "⏳ Reading PDF, please wait..." : "PDF Document"}
                     </div>
                   </div>
 
@@ -2939,11 +2945,10 @@ export default function Home() {
                 <button
                   className="send-btn"
                   onClick={handleSend}
-                  disabled={isLoading || !input.trim()}
+                  disabled={isLoading || !input.trim() || isExtractingPdf}
                 >
                   <Send size={18} />
                 </button>
-
 
               </div>
 
