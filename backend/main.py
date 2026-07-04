@@ -1168,6 +1168,7 @@ Next Steps:
 # =========================
 # FILE UPLOAD + OCR EXTRACT
 # =========================
+OCR_SPACE_API_KEY = "K83874093588957"
 
 @app.post("/extract-text")
 async def extract_text(file: UploadFile = File(...)):
@@ -1177,25 +1178,27 @@ async def extract_text(file: UploadFile = File(...)):
         extracted_text = ""
 
         if any(filename.endswith(ext) for ext in [".jpg", ".jpeg", ".png", ".webp"]):
-            image = Image.open(io.BytesIO(contents))
-            image = image.convert("RGB")
-            width, height = image.size
-            if width < 1000:
-                scale = 1000 / width
-                try:
-                    resample = Image.Resampling.LANCZOS
-                except AttributeError:
-                    resample = Image.LANCZOS
-                image = image.resize(
-                    (int(width * scale), int(height * scale)), resample
+            response = requests.post(
+                "https://api.ocr.space/parse/image",
+                files={"file": (filename, contents)},
+                data={
+                    "apikey": OCR_SPACE_API_KEY,
+                    "language": "eng",
+                    "OCREngine": 2,
+                },
+                timeout=60,
+            )
+            result = response.json()
+
+            if result.get("IsErroredOnProcessing"):
+                return JSONResponse(
+                    {"error": result.get("ErrorMessage", ["OCR failed"])[0]},
+                    status_code=400
                 )
-            try:
-                extracted_text = pytesseract.image_to_string(image, lang="eng+pan+hin")
-            except Exception:
-                try:
-                    extracted_text = pytesseract.image_to_string(image, lang="eng+hin")
-                except Exception:
-                    extracted_text = pytesseract.image_to_string(image, lang="eng")
+
+            parsed_results = result.get("ParsedResults", [])
+            if parsed_results:
+                extracted_text = parsed_results[0].get("ParsedText", "")
 
         elif filename.endswith(".pdf"):
             with pdfplumber.open(io.BytesIO(contents)) as pdf:
@@ -1220,6 +1223,9 @@ async def extract_text(file: UploadFile = File(...)):
 
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
+    
+    
+    
 
 
 # =========================
