@@ -38,21 +38,21 @@ async function handleLoginResponse(
 
     const dbUser = await response.json();
 
-    if (dbUser.is_new) {
-      // Brand new account — show big popup, DO NOT log in yet
-      setShowWelcomeModal(dbUser.name);
-      return;
-    }
-
-    // Existing account — log in normally, fast
+    // Log the user in immediately — for BOTH new and existing accounts.
     setUser(dbUser);
     localStorage.setItem("landresolve_user", JSON.stringify(dbUser));
 
-    window.dispatchEvent(
-      new CustomEvent("show-toast", {
-        detail: `✅ Welcome back ${dbUser.name}`,
-      })
-    );
+    if (dbUser.is_new) {
+      // Brand new account — user is already logged in, just show the
+      // welcome popup on top. No second sign-in required.
+      setShowWelcomeModal(dbUser.name);
+    } else {
+      window.dispatchEvent(
+        new CustomEvent("show-toast", {
+          detail: `✅ Welcome back ${dbUser.name}`,
+        })
+      );
+    }
   } catch (err) {
     console.error("Google login backend error:", err);
     window.dispatchEvent(
