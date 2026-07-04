@@ -274,6 +274,7 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [recordingText, setRecordingText] = useState("");
   const recognitionRef = useRef<any>(null);
+  const finalTranscriptRef = useRef("");
   const [isListening, setIsListening] = useState(false);
   const [audioLevels, setAudioLevels] = useState<number[]>(
     Array(50).fill(10)
@@ -939,47 +940,47 @@ export default function Home() {
     recognition.onstart = async () => {
       setIsListening(true);
       setVoiceMode(true);
-    
+
       const isMobileDevice = /Android|iPhone|iPad/i.test(navigator.userAgent);
-    
+
       if (isMobileDevice) {
         return; // mobile: skip separate mic stream, only use SpeechRecognition itself
       }
-    
+
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
       });
-    
+
       streamRef.current = stream;
-    
+
       const audioContext = new AudioContext();
       audioContextRef.current = audioContext;
-    
+
       const source = audioContext.createMediaStreamSource(stream);
-    
+
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 128;
-    
+
       source.connect(analyser);
-    
+
       analyserRef.current = analyser;
-    
+
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
-    
+
       const animate = () => {
         analyser.getByteTimeDomainData(dataArray);
-    
+
         const bars = Array.from(dataArray)
           .slice(0, 50)
           .map((v) => {
             const level = Math.abs(v - 128);
             return Math.max(3, level * 2);
           });
-    
+
         setAudioLevels(bars);
         animationRef.current = requestAnimationFrame(animate);
       };
-    
+
       animate();
     };
 
@@ -993,34 +994,41 @@ export default function Home() {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
-    
+
       streamRef.current?.getTracks().forEach((track) => track.stop());
       audioContextRef.current?.close();
-    
+
       // On mobile, recognition auto-stops after each pause.
       // If the user hasn't manually stopped/confirmed, restart it so it feels continuous.
       if (isMobileDevice && recognitionRef.current === recognition && isListening) {
         recognition.start();
         return;
       }
-    
+
       setIsListening(false);
       setVoiceMode(false);
     };
 
-
     recognition.onresult = (event: any) => {
-      const text =
-        event.results[event.results.length - 1][0].transcript;
-
-      setRecordingText(text);
+      let interim = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscriptRef.current += transcript + " ";
+        } else {
+          interim += transcript;
+        }
+      }
+      setRecordingText((finalTranscriptRef.current + interim).trim());
     };
+
 
     recognition.onerror = (event: any) => {
       console.log("SPEECH RECOGNITION ERROR:", event.error);
       alert("Voice error: " + event.error);
     };
 
+    finalTranscriptRef.current = "";
     recognition.start();
   };
 
@@ -1069,13 +1077,16 @@ export default function Home() {
   };
 
   const stopRecording = () => {
+    finalTranscriptRef.current = "";
+    recognitionRef.current?.stop();
+  };
+  
+  const acceptRecording = () => {
+    setInput(recordingText);
+    finalTranscriptRef.current = "";
     recognitionRef.current?.stop();
   };
 
-  const acceptRecording = () => {
-    setInput(recordingText);
-    recognitionRef.current?.stop();
-  };
 
   const handleSend = async () => {
     if (isLoading || !input.trim()) return;
