@@ -1612,6 +1612,61 @@ export default function Home() {
         .download-btn:hover { background: linear-gradient(135deg, rgba(22,163,74,0.3), rgba(34,197,94,0.2)); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(34,197,94,0.3); }
         .generated-file-bar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(20,83,45,0.3); border: 1px solid rgba(34,197,94,0.25); border-radius: 10px; margin-top: 4px; margin-left: 48px; flex-wrap: wrap; animation: msgFadeIn 0.3s ease; }
         .gen-file-label { font-size: 12px; color: #86efac; font-family: var(--font); }
+        /* ── GUEST LOGIN BANNER ── */
+        .guest-banner-wrap { padding: 14px 20px 0; flex-shrink: 0; }
+        .guest-banner {
+          display: flex; align-items: center; gap: 14px;
+          background: var(--bg-elevated); border: 1px solid rgba(34,197,94,0.25);
+          border-radius: var(--radius-md); padding: 12px 16px;
+          box-shadow: 0 4px 20px rgba(34,197,94,0.08);
+          animation: msgFadeIn 0.4s cubic-bezier(0.34,1.2,0.64,1);
+          max-width: 900px; margin: 0 auto; flex-wrap: wrap;
+        }
+        .guest-banner-icon {
+          width: 34px; height: 34px; border-radius: 10px;
+          background: var(--accent-glow); border: 1px solid rgba(34,197,94,0.25);
+          display: flex; align-items: center; justify-content: center;
+          color: var(--accent); flex-shrink: 0;
+        }
+        .guest-banner-text { font-size: 13px; color: var(--text-secondary); line-height: 1.5; flex: 1; min-width: 180px; }
+        .guest-banner-text strong { color: var(--text-primary); font-weight: 600; }
+        .guest-banner-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .guest-banner-close {
+          width: 28px; height: 28px; border-radius: 7px;
+          border: 1px solid var(--border-strong); background: transparent;
+          color: var(--text-muted); cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          transition: all 0.18s; flex-shrink: 0;
+        }
+        .guest-banner-close:hover { background: rgba(239,68,68,0.12); color: #ef4444; border-color: rgba(239,68,68,0.25); }
+
+        /* ── GUEST LOGIN BANNER ── */
+        .guest-banner-wrap { padding: 14px 20px 0; flex-shrink: 0; }
+        .guest-banner {
+          display: flex; align-items: center; gap: 14px;
+          background: var(--bg-elevated); border: 1px solid rgba(34,197,94,0.25);
+          border-radius: var(--radius-md); padding: 12px 16px;
+          box-shadow: 0 4px 20px rgba(34,197,94,0.08);
+          animation: msgFadeIn 0.4s cubic-bezier(0.34,1.2,0.64,1);
+          max-width: 900px; margin: 0 auto; flex-wrap: wrap;
+        }
+        .guest-banner-icon {
+          width: 34px; height: 34px; border-radius: 10px;
+          background: var(--accent-glow); border: 1px solid rgba(34,197,94,0.25);
+          display: flex; align-items: center; justify-content: center;
+          color: var(--accent); flex-shrink: 0;
+        }
+        .guest-banner-text { font-size: 13px; color: var(--text-secondary); line-height: 1.5; flex: 1; min-width: 180px; }
+        .guest-banner-text strong { color: var(--text-primary); font-weight: 600; }
+        .guest-banner-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .guest-banner-close {
+          width: 28px; height: 28px; border-radius: 7px;
+          border: 1px solid var(--border-strong); background: transparent;
+          color: var(--text-muted); cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          transition: all 0.18s; flex-shrink: 0;
+        }
+        .guest-banner-close:hover { background: rgba(239,68,68,0.12); color: #ef4444; border-color: rgba(239,68,68,0.25); }
 
         /* ── AI IMAGE CARD ── */
         .ai-image-card {
@@ -2346,41 +2401,24 @@ export default function Home() {
           </header>
 
           {showGuestBanner && !user && (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                padding: "10px 20px",
-                background: "rgba(34,197,94,0.08)",
-                borderBottom: "1px solid rgba(34,197,94,0.2)",
-                flexShrink: 0,
-                flexWrap: "wrap",
-              }}
-            >
-              <span style={{ fontSize: "13px", color: "#cbd5e1" }}>
-                💡 You're chatting as a guest — sign in to save this conversation and access it later.
-              </span>
-
-              <div style={{ transform: "scale(0.75)", transformOrigin: "left center" }}>
-                <GoogleLoginButton setUser={setUser} setShowWelcomeModal={setWelcomeModalName} />
+            <div className="guest-banner-wrap">
+              <div className="guest-banner">
+                <div className="guest-banner-icon"><Sparkles size={16} /></div>
+                <div className="guest-banner-text">
+                  You're chatting as a <strong>guest</strong> — sign in to save this conversation and access it anytime.
+                </div>
+                <div className="guest-banner-actions">
+                  <div style={{ transform: "scale(0.82)", transformOrigin: "center" }}>
+                    <GoogleLoginButton setUser={setUser} setShowWelcomeModal={setWelcomeModalName} />
+                  </div>
+                  <button className="guest-banner-close" onClick={() => setShowGuestBanner(false)}>
+                    <X size={14} />
+                  </button>
+                </div>
               </div>
-
-              <button
-                onClick={() => setShowGuestBanner(false)}
-                style={{
-                  marginLeft: "auto",
-                  background: "transparent",
-                  border: "none",
-                  color: "#8b8b9e",
-                  cursor: "pointer",
-                  fontSize: "16px",
-                }}
-              >
-                ✕
-              </button>
             </div>
           )}
+
 
 
           {!currentConversationId ? (
