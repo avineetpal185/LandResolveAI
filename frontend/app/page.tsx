@@ -275,6 +275,8 @@ export default function Home() {
   const [recordingText, setRecordingText] = useState("");
   const recognitionRef = useRef<any>(null);
   const finalTranscriptRef = useRef("");
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
   const [isListening, setIsListening] = useState(false);
   const isListeningRef = useRef(false);
   const [audioLevels, setAudioLevels] = useState<number[]>(
@@ -917,122 +919,49 @@ export default function Home() {
     }
   };
 
-  const startListening = () => {
-    const SpeechRecognition =
-      (window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert("Voice not supported");
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognitionRef.current = recognition;
-
-    const isMobileDevice = /Android|iPhone|iPad/i.test(navigator.userAgent);
-
-    recognition.continuous = !isMobileDevice;   // false on mobile, true on desktop
-    recognition.interimResults = true;
-    recognition.lang = "en-IN";
-
-
-
-    recognition.onstart = async () => {
-      setIsListening(true);
-      isListeningRef.current = true;  
-      setVoiceMode(true);
-
-      const isMobileDevice = /Android|iPhone|iPad/i.test(navigator.userAgent);
-
-      if (isMobileDevice) {
-        return; // mobile: skip separate mic stream, only use SpeechRecognition itself
-      }
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      });
-
+  const startListening = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
-
+  
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+  
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+      mediaRecorder.start();
+  
+      setIsListening(true);
+      isListeningRef.current = true;
+      setVoiceMode(true);
+  
       const audioContext = new AudioContext();
       audioContextRef.current = audioContext;
-
       const source = audioContext.createMediaStreamSource(stream);
-
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 128;
-
       source.connect(analyser);
-
       analyserRef.current = analyser;
-
+  
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
-
       const animate = () => {
         analyser.getByteTimeDomainData(dataArray);
-
         const bars = Array.from(dataArray)
           .slice(0, 50)
           .map((v) => {
             const level = Math.abs(v - 128);
             return Math.max(3, level * 2);
           });
-
         setAudioLevels(bars);
         animationRef.current = requestAnimationFrame(animate);
       };
-
       animate();
-    };
-
-
-
-
-
-
-
-    recognition.onend = () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-
-      streamRef.current?.getTracks().forEach((track) => track.stop());
-      audioContextRef.current?.close();
-
-      // On mobile, recognition auto-stops after each pause.
-      // If the user hasn't manually stopped/confirmed, restart it so it feels continuous.
-      if (isMobileDevice && recognitionRef.current === recognition && isListeningRef.current) {
-        recognition.start();
-        return;
-      }
-
-      setIsListening(false);
-      isListeningRef.current = false; 
-      setVoiceMode(false);
-    };
-
-    recognition.onresult = (event: any) => {
-      let interim = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          finalTranscriptRef.current += transcript + " ";
-        } else {
-          interim += transcript;
-        }
-      }
-      setRecordingText((finalTranscriptRef.current + interim).trim());
-    };
-
-
-    recognition.onerror = (event: any) => {
-      console.log("SPEECH RECOGNITION ERROR:", event.error);
-      alert("Voice error: " + event.error);
-    };
-
-    finalTranscriptRef.current = "";
-    recognition.start();
+    } catch (err) {
+      console.log("Mic error:", err);
+      alert("Could not access microphone");
+    }
   };
 
 
@@ -1080,16 +1009,46 @@ export default function Home() {
   };
 
   const stopRecording = () => {
-    isListeningRef.current = false;  
-    finalTranscriptRef.current = "";
-    recognitionRef.current?.stop();
+    isListeningRef.current = false;
+    mediaRecorderRef.current?.stop();
+    if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    audioContextRef.current?.close();
+    setIsListening(false);
+    setVoiceMode(false);
   };
   
   const acceptRecording = () => {
     isListeningRef.current = false;
-    setInput(recordingText);
-    finalTranscriptRef.current = "";
-    recognitionRef.current?.stop();
+  
+    const recorder = mediaRecorderRef.current;
+    if (!recorder) return;
+  
+    recorder.onstop = async () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      audioContextRef.current?.close();
+      setIsListening(false);
+      setVoiceMode(false);
+  
+      const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+      const formData = new FormData();
+      formData.append("audio", audioBlob, "voice.webm");
+  
+      try {
+        const res = await fetch("https://landresolveai.onrender.com/transcribe", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+        setInput(data.text || "");
+      } catch (err) {
+        console.log("Transcription error:", err);
+        alert("Could not transcribe audio");
+      }
+    };
+  
+    recorder.stop();
   };
 
 
