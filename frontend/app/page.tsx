@@ -1948,7 +1948,7 @@ export default function Home() {
 
         .voice-wave span {
         width: 2px;
-        
+        flex-shrink: 0;
         background: #bfbfbf;
         border-radius: 999px;
         
@@ -2859,21 +2859,18 @@ export default function Home() {
                       ✕
                     </button>
 
-                    <div className="voice-wave">
-                      {Array.from({ length: 250 }).map((_, i) => {
-                        const level =
-                          audioLevels[Math.floor(i * audioLevels.length / 250)] || 10;
 
-                        return (
-                          <span
-                            key={i}
-                            style={{
-                              height: `${level}px`,
-                            }}
-                          />
-                        );
-                      })}
+                    <div className="voice-wave">
+                      {audioLevels.map((level, i) => (
+                        <span
+                          key={i}
+                          style={{
+                            height: `${level}px`,
+                          }}
+                        />
+                      ))}
                     </div>
+
 
                     <button
                       className="voice-confirm"
