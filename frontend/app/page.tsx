@@ -923,28 +923,31 @@ export default function Home() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
-  
+
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
-  
+
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) audioChunksRef.current.push(e.data);
       };
       mediaRecorder.start();
-  
+
       setIsListening(true);
       isListeningRef.current = true;
       setVoiceMode(true);
-  
+
       const audioContext = new AudioContext();
       audioContextRef.current = audioContext;
+      if (audioContext.state === "suspended") {
+        await audioContext.resume();
+      }
       const source = audioContext.createMediaStreamSource(stream);
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 128;
       source.connect(analyser);
       analyserRef.current = analyser;
-  
+
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
       const animate = () => {
         analyser.getByteTimeDomainData(dataArray);
@@ -1015,25 +1018,25 @@ export default function Home() {
     setIsListening(false);
     setVoiceMode(false);
   };
-  
+
   const acceptRecording = () => {
     isListeningRef.current = false;
     const recorder = mediaRecorderRef.current;
     if (!recorder) return;
-  
+
     recorder.onstop = async () => {
       if (animationRef.current) cancelAnimationFrame(animationRef.current);
       streamRef.current?.getTracks().forEach((track) => track.stop());
       audioContextRef.current?.close();
       setIsListening(false);
       setVoiceMode(false);
-  
+
       setInput("🎙️ Converting voice to text..."); // ADD THIS LINE
-  
+
       const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
       const formData = new FormData();
       formData.append("audio", audioBlob, "voice.webm");
-  
+
       try {
         const res = await fetch("https://landresolveai.onrender.com/transcribe", {
           method: "POST",
@@ -1047,7 +1050,7 @@ export default function Home() {
         alert("Could not transcribe audio");
       }
     };
-  
+
     recorder.stop();
   };
 
