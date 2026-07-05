@@ -1028,6 +1028,8 @@ export default function Home() {
       setIsListening(false);
       setVoiceMode(false);
   
+      setInput("🎙️ Converting voice to text..."); // ADD THIS LINE
+  
       const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
       const formData = new FormData();
       formData.append("audio", audioBlob, "voice.webm");
@@ -1041,6 +1043,7 @@ export default function Home() {
         setInput(data.text || "");
       } catch (err) {
         console.log("Transcription error:", err);
+        setInput(""); // clear the loading message if it fails
         alert("Could not transcribe audio");
       }
     };
