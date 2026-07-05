@@ -292,7 +292,9 @@ export default function Home() {
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [showGuestBanner, setShowGuestBanner] = useState(false);
   const guestPromptShownRef = useRef(false);
+  const userMessageCountRef = useRef(0);
   const attachMenuRef = useRef<HTMLDivElement | null>(null);
+
 
 
 
@@ -1061,7 +1063,9 @@ export default function Home() {
     setInput("");
     setHasFirstMessage(true);
 
-    if (!user && !guestPromptShownRef.current) {
+    userMessageCountRef.current += 1;
+
+    if (!user && !guestPromptShownRef.current && userMessageCountRef.current >= 2) {
       guestPromptShownRef.current = true;
       setTimeout(() => setShowGuestBanner(true), 1200);
     }
