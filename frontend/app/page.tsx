@@ -1949,8 +1949,8 @@ export default function Home() {
         .voice-wave span {
         flex: 1;
         min-width: 1px;
-        max-width: 4px;
-        flex-shrink: 0;
+        
+        
         background: #bfbfbf;
         border-radius: 999px;
         
