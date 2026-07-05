@@ -23,6 +23,8 @@ import asyncio
 import pytesseract
 from PIL import Image, ImageDraw, ImageFont
 import pdfplumber
+import speech_recognition as sr
+from pydub import AudioSegment
 import io
 import base64
 import os
@@ -1231,6 +1233,37 @@ async def extract_text(file: UploadFile = File(...)):
 # =========================
 # CONVERSATIONS CRUD
 # =========================
+
+# =========================
+# VOICE TRANSCRIPTION
+# =========================
+
+@app.post("/transcribe")
+async def transcribe_audio(audio: UploadFile = File(...)):
+    try:
+        raw_bytes = await audio.read()
+
+        # Convert incoming webm audio to WAV (SpeechRecognition needs WAV/FLAC/AIFF)
+        audio_segment = AudioSegment.from_file(io.BytesIO(raw_bytes))
+        wav_io = io.BytesIO()
+        audio_segment.export(wav_io, format="wav")
+        wav_io.seek(0)
+
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(wav_io) as source:
+            audio_data = recognizer.record(source)
+
+        text = recognizer.recognize_google(audio_data, language="en-IN")
+        return {"text": text}
+
+    except sr.UnknownValueError:
+        return JSONResponse({"text": "", "error": "Could not understand audio"}, status_code=200)
+    except Exception as e:
+        print("TRANSCRIBE ERROR:", str(e))
+        return JSONResponse({"text": "", "error": str(e)}, status_code=500)
+    
+    
+
 @app.get("/conversations")
 async def get_conversations(user_id: str):
     print("USER ID RECEIVED =", user_id)
