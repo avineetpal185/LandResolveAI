@@ -28,4 +28,9 @@ node_modules/
 *.pdf
 *.png
 *.jpg
+!backend/educational_documents/*.png
+!backend/educational_documents/*.jpg
+!backend/educational_documents/*.jpeg
+!backend/educational_documents/*.avif
+
 /generated/prisma
