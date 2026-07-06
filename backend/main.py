@@ -435,6 +435,7 @@ async def _fetch_and_save_ai_image(subject: str) -> dict:
 # List moved to module level so it's defined once and never depends on
 # which branch (new vs existing conversation) runs first.
 ALLOWED_IMAGE_KEYWORDS = [
+
     "land",
     "property",
     "farm",
@@ -442,19 +443,21 @@ ALLOWED_IMAGE_KEYWORDS = [
     "village",
     "plot",
     "boundary",
-    "survey",
+
+    "jamabandi",
+    "girdawari",
+    "khasra",
+    "tatima",
+    "aks shajra",
+    "mutation",
+    "intkal",
     "registry",
     "sale deed",
-    "partition",
+    "partition deed",
     "power of attorney",
     "will",
-    "jamabandi",
-    "mutation",
-    "fard",
-    "khasra",
-    "patwari",
-    "tehsil",
-    "map"
+    "e stamp",
+    "estamp"
 ]
 
 
@@ -659,6 +662,34 @@ async def chat(request: ChatRequest):
         conversation_id = request.conversation_id
 
     latest_message = request.messages[-1].content
+    
+    image_url = find_document_image(latest_message)
+
+if image_url:
+
+    db.add(Message(
+        conversation_id=conversation_id,
+        role="ai_image",
+        content=json.dumps({
+            "url": image_url,
+            "prompt": latest_message
+        })
+    ))
+    db.commit()
+    db.close()
+
+    def image_response():
+        yield json.dumps({
+            "type": "document_image",
+            "url": image_url,
+            "text": ""
+        })
+
+    return StreamingResponse(
+        image_response(),
+        media_type="text/plain",
+        headers={"X-Conversation-Id": str(conversation_id)}
+    )
     
     dataset_result = search_dataset(latest_message)
 
@@ -1134,7 +1165,7 @@ Next Steps:
                 if image_url:
                     full_ai_response = json.dumps({
                     "type": "document_image",
-                    "text": full_ai_response,
+                    "text": f"Below is a sample educational image of the requested document: {latest_message.title()}",
                     "url": image_url
                 })
             else:
