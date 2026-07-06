@@ -1351,7 +1351,7 @@ export default function Home() {
 
         /* ── INTRO ── */
         .intro-overlay {
-          position: fixed; inset: 0; z-index: 9999;
+          position: fixed; inset: 0; z-index: 999999999;
           background: #0a0a0f;
           display: flex; flex-direction: column; align-items: center; justify-content: center;
           transition: opacity 0.85s cubic-bezier(0.4,0,0.2,1), transform 0.85s cubic-bezier(0.4,0,0.2,1);
