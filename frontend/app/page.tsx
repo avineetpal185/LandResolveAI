@@ -18,8 +18,7 @@ type MessageRole =
   | "user"
   | "assistant"
   | "ai_image"
-  | "pdf"
-  | "doc_picker";
+  | "pdf";
 type Message = { role: MessageRole; content: string; };
 type Conversation = { id: string; title: string; };
 
@@ -36,72 +35,6 @@ const AI_IMAGE_THINKING_STEPS = [
   "✨ Applying details...",
   "🖼️ Finalizing your image...",
 ];
-
-const DOCUMENT_LIBRARY = [
-  { id: "estamp", label: "E-Stamp (Sample)", file: "e_stamp_punjab_sample.jpg", desc: "Sample of a Punjab e-stamp paper used for legal document registration.", aliases: ["e-stamp", "estamp", "e stamp", "stamp paper"] },
-  { id: "shajra", label: "Aks Shajra", file: "punjab_Aks Shajra.png", desc: "Village map showing plot boundaries and layout of land (Shajra).", aliases: ["shajra", "aks shajra", "land map", "survey map"] },
-  { id: "girdawari", label: "Girdawari", file: "punjab_Girdawari.avif", desc: "Crop inspection record maintained by the Patwari each season.", aliases: ["girdawari", "girdwari"] },
-  { id: "jamabandi", label: "Jamabandi", file: "punjab_Jamabandi.png", desc: "Record of land ownership and rights maintained by the Patwari.", aliases: ["jamabandi", "jamabdi", "jamabndi", "jama bandi", "jamabandhi"] },
-  { id: "khasra", label: "Khasra", file: "punjab_khasra-document.png", desc: "Field-wise record showing plot numbers, area, and crop details.", aliases: ["khasra"] },
-  { id: "intkal", label: "Mutation Register / Intkal", file: "punjab_Mutation Registe,Intkal.png", desc: "Mutation record showing transfer of ownership after sale, inheritance, or gift.", aliases: ["intkal", "intekal", "intqal", "mutation"] },
-  { id: "partition", label: "Partition Deed", file: "punjab_parition_dead.png", desc: "Document dividing jointly-owned property among co-owners.", aliases: ["partition deed", "partition"] },
-  { id: "poa", label: "Power of Attorney", file: "punjab_Power of Attorney.png", desc: "Document authorizing another person to act on your behalf for property matters.", aliases: ["power of attorney", "poa"] },
-  { id: "tatima", label: "Tatima", file: "punjab_tatima.png", desc: "Sketch map of a specific plot showing its exact boundaries and dimensions.", aliases: ["tatima"] },
-  { id: "tatima2", label: "Tatima (Sample 2)", file: "punjab_tatima(2).png", desc: "Another sample sketch map (Tatima) of a land plot.", aliases: ["tatima 2", "tatima sample"] },
-  { id: "will", label: "Will / Vasiyat", file: "punjab_will.png", desc: "Legal declaration of how a person's property should be distributed after death.", aliases: ["will", "vasiyat", "vasiyatnama"] },
-  { id: "registry_intkal", label: "Registry Intkal", file: "registry_intkal.png", desc: "Combined registry and mutation record after a property transfer.", aliases: ["registry intkal", "registry mutation"] },
-  { id: "saledeed", label: "Sale Deed", file: "sale_deed.png", desc: "Legal document recording the sale of property between buyer and seller.", aliases: ["sale deed", "sale-deed", "registry"] },
-];
-
-function levenshtein(a: string, b: string): number {
-  const m = a.length, n = b.length;
-  const dp = Array.from({ length: m + 1 }, (_, i) => [i, ...Array(n).fill(0)]);
-  for (let j = 0; j <= n; j++) dp[0][j] = j;
-  for (let i = 1; i <= m; i++) {
-    for (let j = 1; j <= n; j++) {
-      dp[i][j] = a[i - 1] === b[j - 1]
-        ? dp[i - 1][j - 1]
-        : 1 + Math.min(dp[i - 1][j - 1], dp[i - 1][j], dp[i][j - 1]);
-    }
-  }
-  return dp[m][n];
-}
-
-function aliasScore(input: string, alias: string): number {
-  const clean = input.trim();
-  if (!clean) return 0;
-  if (clean.includes(alias) || alias.includes(clean)) return 1;
-
-  const words = clean.split(/\s+/);
-  const aliasWords = alias.split(/\s+/);
-  let best = 0;
-  for (const w of words) {
-    for (const aw of aliasWords) {
-      if (w === aw) { best = Math.max(best, 1); continue; }
-      const dist = levenshtein(w, aw);
-      const maxLen = Math.max(w.length, aw.length);
-      const sim = maxLen ? 1 - dist / maxLen : 0;
-      if (sim > best) best = sim;
-    }
-  }
-  return best;
-}
-
-function matchDocuments(subject: string, threshold = 0.6, maxResults = 3) {
-  const clean = subject.toLowerCase().replace(/\s+/g, " ").trim();
-  if (!clean) return [];
-
-  const scored = DOCUMENT_LIBRARY.map((doc) => {
-    const score = Math.max(...doc.aliases.map((a) => aliasScore(clean, a)));
-    return { doc, score };
-  });
-
-  return scored
-    .filter((s) => s.score >= threshold)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, maxResults)
-    .map((s) => s.doc);
-}
 
 
 
@@ -153,7 +86,12 @@ function detectGenerateIntent(text: string): "pdf" | "image" | "ai_image" | null
     "view"
   ];
 
-
+  if (
+    educationalDocs.some(doc => t.includes(doc)) &&
+    documentWords.some(word => t.includes(word))
+  ) {
+    return null;
+  }
 
   const aiImageKeywords = [
     "generate image of",
@@ -856,20 +794,6 @@ export default function Home() {
     setIsLoading(false);
   };
 
-  const handleSelectDocument = (doc: typeof DOCUMENT_LIBRARY[number]) => {
-    const imgMsg: Message = {
-      role: "ai_image",
-      content: JSON.stringify({
-        type: "document_image",
-        url: `/educational_documents/${encodeURIComponent(doc.file)}`,
-        text: `📄 **${doc.label}**\n\n${doc.desc}`,
-      }),
-    };
-    const updated = [...messagesRef.current, imgMsg];
-    setMessages(updated);
-    messagesRef.current = updated;
-  };
-
   const handleCopy = (text: string, index: number) => {
     navigator.clipboard.writeText(text).then(() => {
       setCopiedIndex(index);
@@ -1152,39 +1076,7 @@ export default function Home() {
     console.log("GEN INTENT =", genIntent);
 
     if (genIntent === "ai_image") {
-      const subject = currentInput
-        .toLowerCase()
-        .replace(/generate (an? )?image of/gi, "")
-        .replace(/create (an? )?image of/gi, "")
-        .replace(/make (an? )?image of/gi, "")
-        .replace(/show (me )?(an? )?image of/gi, "")
-        .replace(/image of/gi, "")
-        .replace(/generate (an? )?picture of/gi, "")
-        .replace(/create (an? )?picture of/gi, "")
-        .replace(/show me (an? )?(image|picture) of/gi, "")
-        .trim();
-
-      const matches = matchDocuments(subject);
-
-      const userMsg: Message = { role: "user", content: currentInput };
-      const updated = [...messagesRef.current, userMsg];
-      setMessages(updated);
-      messagesRef.current = updated;
-      setHasFirstMessage(true);
-
-      if (matches.length > 0) {
-        const pickerMsg: Message = {
-          role: "doc_picker",
-          content: JSON.stringify({ ids: matches.map((m) => m.id) }),
-        };
-        const withPicker = [...messagesRef.current, pickerMsg];
-        setMessages(withPicker);
-        messagesRef.current = withPicker;
-        return;
-      }
-
-      console.log("CALLING handleAIImageGenerate (fallback)");
-      messagesRef.current = messagesRef.current.slice(0, -1);
+      console.log("CALLING handleAIImageGenerate");
       await handleAIImageGenerate(currentInput);
       return;
     }
@@ -1459,7 +1351,7 @@ export default function Home() {
 
         /* ── INTRO ── */
         .intro-overlay {
-          position: fixed; inset: 0; z-index: 999999999;
+          
           background: #0a0a0f;
           display: flex; flex-direction: column; align-items: center; justify-content: center;
           transition: opacity 0.85s cubic-bezier(0.4,0,0.2,1), transform 0.85s cubic-bezier(0.4,0,0.2,1);
@@ -2642,62 +2534,6 @@ export default function Home() {
                   }
 
                   /* ─── AI IMAGE MESSAGE ─── */
-                  /* ─── AI IMAGE MESSAGE ─── */
-                  if (msg.role === "doc_picker") {
-                    let ids: string[] = [];
-                    try {
-                      ids = JSON.parse(msg.content).ids || [];
-                    } catch { }
-                    const suggestions = DOCUMENT_LIBRARY.filter((d) => ids.includes(d.id));
-                    if (suggestions.length === 0) return null;
-
-                    return (
-                      <div key={index} className="msg-wrapper bot-wrapper">
-                        <div className="msg-row assistant">
-                          <div className="avatar bot">
-                            <Bot size={17} color="#fff" />
-                          </div>
-                          <div className="msg-bubble bot" style={{ width: "100%" }}>
-                            <div style={{ marginBottom: "12px" }}>
-                              📑 Did you mean one of these documents?
-                            </div>
-                            <div
-                              style={{
-                                display: "grid",
-                                gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
-                                gap: "10px",
-                                maxWidth: "500px",
-                              }}
-                            >
-                              {suggestions.map((doc) => (
-                                <button
-                                  key={doc.id}
-                                  onClick={() => handleSelectDocument(doc)}
-                                  style={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    gap: "6px",
-                                    background: "var(--bg-elevated)",
-                                    border: "1px solid var(--border-strong)",
-                                    borderRadius: "12px",
-                                    padding: "10px",
-                                    cursor: "pointer",
-                                  }}
-                                >
-                                  <span style={{ fontSize: "20px" }}>📄</span>
-                                  <span style={{ fontSize: "12.5px", color: "var(--text-primary)", textAlign: "center", fontWeight: 500 }}>
-                                    {doc.label}
-                                  </span>
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  }
-
                   /* ─── AI IMAGE MESSAGE ─── */
                   if (msg.role === "ai_image") {
                     const parsed = (() => {
