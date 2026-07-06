@@ -289,7 +289,30 @@ export default function Home() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const animationRef = useRef<number | null>(null);
+
   const [showAttachMenu, setShowAttachMenu] = useState(false);
+  const [showDocPopup, setShowDocPopup] = useState(false);
+  const [docQuery, setDocQuery] = useState("");
+
+  const DOCUMENTS = [
+    "Jamabandi",
+    "Fard",
+    "Aks Shajra",
+    "Girdawari",
+    "Khasra document",
+    "Mutation Register (Intkal)",
+    "Partition deed",
+    "Power of Attorney",
+    "Tatima",
+    "Will",
+    "Registry (Intkal)",
+    "Sale deed",
+    "E-stamp (Punjab sample)",
+  ];
+
+  const filteredDocs = DOCUMENTS.filter(d =>
+    d.toLowerCase().includes(docQuery.toLowerCase())
+  );
   const [showGuestBanner, setShowGuestBanner] = useState(false);
   const guestPromptShownRef = useRef(false);
   const userMessageCountRef = useRef(0);
@@ -502,6 +525,23 @@ export default function Home() {
       textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 160) + "px";
     }
+  }, [input]);
+
+  useEffect(() => {
+    const t = input.toLowerCase();
+    const idx = t.lastIndexOf("image");
+    if (idx === -1) {
+      setShowDocPopup(false);
+      return;
+    }
+    let after = input.slice(idx + "image".length);
+    if (after.includes("\n")) {
+      setShowDocPopup(false);
+      return;
+    }
+    after = after.replace(/^\s*of\s*/i, ""); // strip "of" if user already typed it
+    setDocQuery(after.trim());
+    setShowDocPopup(true);
   }, [input]);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -1056,6 +1096,16 @@ export default function Home() {
     recorder.stop();
   };
 
+  const selectDocument = (name: string) => {
+    const idx = input.toLowerCase().lastIndexOf("image");
+    const before = idx === -1 ? "" : input.slice(0, idx);
+    setInput(before + `image of ${name.toLowerCase()}`);
+    setShowDocPopup(false);
+    textareaRef.current?.focus();
+  };
+
+
+
 
   const handleSend = async () => {
     if (isLoading || !input.trim()) return;
@@ -1237,6 +1287,8 @@ export default function Home() {
       setMessages((prev) => [...prev, { role: "assistant", content: "⚠️ Error connecting to backend." }]);
     }
   };
+
+
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -2852,7 +2904,106 @@ export default function Home() {
 
 
 
-              <div className="input-box">
+
+              <div style={{ position: "relative" }}>
+                {showDocPopup && filteredDocs.length > 0 && (
+                  <div style={{
+                    position: "absolute",
+                    bottom: "calc(100% + 8px)",
+                    left: 0,
+                    right: 0,
+                    background: "var(--bg-elevated)",
+                    border: "1px solid var(--border-strong)",
+                    borderRadius: "14px",
+                    padding: "6px",
+                    maxHeight: "220px",
+                    overflowY: "auto",
+                    boxShadow: "0 12px 40px rgba(0,0,0,0.45)",
+                    zIndex: 50,
+                    animation: "menuFadeIn 0.2s ease",
+                  }}>
+                    {filteredDocs.map((doc) => (
+                      <button
+                        key={doc}
+                        onClick={() => selectDocument(doc)}
+                        style={{
+                          display: "flex", alignItems: "center", gap: "10px",
+                          width: "100%", padding: "10px 12px", border: "none",
+                          background: "transparent", color: "var(--text-primary)",
+                          fontSize: "13.5px", textAlign: "left", cursor: "pointer",
+                          borderRadius: "8px", fontFamily: "var(--font)",
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-hover)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                      >
+                        <FileText size={15} color="var(--accent)" />
+                        {doc}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <div className="input-box">
+                  {isListening ? (
+                    <div className="voice-recording-box">
+                      <button className="voice-cancel" onClick={stopRecording}>✕</button>
+                      <div className="voice-wave">
+                        {audioLevels.map((level, i) => (
+                          <span key={i} style={{ height: `${level}px` }} />
+                        ))}
+                      </div>
+                      <button className="voice-confirm" onClick={acceptRecording}>✓</button>
+                    </div>
+                  ) : (
+                    <>
+                      <div ref={attachMenuRef} style={{ position: "relative" }}>
+                        <button type="button" className="attach-btn" onClick={() => setShowAttachMenu(!showAttachMenu)}>
+                          +
+                        </button>
+                        {showAttachMenu && (
+                          <div className="attach-menu">
+                            <button className="attach-item" onClick={() => { fileInputRef.current?.click(); setShowAttachMenu(false); }}>
+                              📄 Upload PDF
+                            </button>
+                            <button className="attach-item" onClick={() => { startListening(); setShowAttachMenu(false); }}>
+                              🎤 Voice Input
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <textarea
+                        ref={textareaRef}
+                        className="input-textarea"
+                        placeholder={isLoading ? "AI is working..." : "Describe your land dispute..."}
+                        value={input}
+                        disabled={isLoading}
+                        rows={1}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !e.shiftKey && !isLoading) {
+                            e.preventDefault();
+                            handleSend();
+                          }
+                        }}
+                      />
+                    </>
+                  )}
+
+                  <button
+                    className="send-btn"
+                    onClick={handleSend}
+                    disabled={isLoading || !input.trim() || isExtractingPdf}
+                  >
+                    <Send size={18} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="input-footer">
+
+
+
 
 
                 {isListening ? (
