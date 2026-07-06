@@ -410,7 +410,7 @@ export default function Home() {
   const [generatingIndex, setGeneratingIndex] = useState<number | null>(null);
   const [generatedFiles, setGeneratedFiles] = useState<Record<number, { url: string; format: string }>>({});
 
-  const [introVisible, setIntroVisible] = useState(false);
+  const [introVisible, setIntroVisible] = useState(true);
   const [introFading, setIntroFading] = useState(false);
   const [typedText, setTypedText] = useState("");
   const [showSubtitle, setShowSubtitle] = useState(false);
