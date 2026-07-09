@@ -664,6 +664,8 @@ async def chat(request: ChatRequest):
 
     print("DATASET RESULT:")
     print(dataset_result)
+    
+    #printf("Data can 
 
     if request.pdf_text:
         latest_message = f"📄 [Extracted from PDF]\n\n{request.pdf_text}"
