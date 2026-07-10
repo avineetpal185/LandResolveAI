@@ -1039,6 +1039,21 @@ Your job is only to:
 3. Explain when it is used.
 4. Keep the explanation concise (5–8 lines).
 
+RESPONSE FORMAT RULES:
+
+- Never output JSON.
+- Never output Markdown image syntax such as ![Image](...).
+- Never use placeholders such as <image_placeholder>.
+- Never include image URLs in the response.
+- Do not say "Here is the image" or "Below is the image".
+- Assume the application automatically displays the educational document image.
+- Respond only with the document explanation.
+- Use plain text only.
+- Do not use Markdown tables.
+- Do not use Markdown headings (# or ##).
+- Keep the response between 5 and 8 lines.
+- Prefer short paragraphs instead of long bullet lists.
+
 Legal Context:
 {context}
 """
