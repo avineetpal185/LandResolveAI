@@ -21,7 +21,7 @@ DOCUMENT_IMAGES = {
     "will": "punjab_will.png",
     "will document": "punjab_will.png",
 
-    "partition deed": "punjab_partition_dead.png",
+    "Partition deed": "punjab_parition_dead.png",
 
     "tatima": "punjab_tatima.png",
 
@@ -33,3 +33,5 @@ DOCUMENT_IMAGES = {
     "estamp": "e_stamp_punjab_sample.jpg",
     "e-stamp": "e_stamp_punjab_sample.jpg",
 }
+
+
