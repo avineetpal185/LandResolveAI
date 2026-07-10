@@ -105,7 +105,7 @@ Users can only access conversations associated with their own Google account.
 
 ### AI
 
-* Ollama
+* OpenRouter AI
 
 ### Deployment
 
