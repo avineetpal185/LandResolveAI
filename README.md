@@ -32,7 +32,7 @@ https://github.com/avineetpal185/LandResolveAI/releases/latest
 - Educational sample documents
 
 
-* ### 🖼️ Educational Document Images
+### 🖼️ Educational Document Images
 Supports educational sample images for Punjab land records including:
 
 - Jamabandi
