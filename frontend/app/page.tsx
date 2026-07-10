@@ -70,8 +70,21 @@ function detectGenerateIntent(text: string): "pdf" | "image" | "ai_image" | null
 
     "will",
     "vasiyat",
-    "vasiyatnama"
+    "vasiyatnama",
+
+    // NEWLY ADDED — these were falling through to AI image generation
+    "aks shajra",
+    "aks shajara",
+    "shajra",
+    "girdawari",
+    "khasra",
+    "khasra document",
+    "tatima",
+    "e-stamp",
+    "e stamp",
+    "estamp",
   ];
+
   const documentWords = [
     "image",
     "photo",
@@ -2943,6 +2956,8 @@ export default function Home() {
                   </div>
                 )}
 
+
+
                 <div className="input-box">
                   {isListening ? (
                     <div className="voice-recording-box">
@@ -3000,7 +3015,7 @@ export default function Home() {
                 </div>
               </div>
 
-             
+
 
 
               <div className="input-footer">
