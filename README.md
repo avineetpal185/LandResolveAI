@@ -153,7 +153,11 @@ https://landresolve-ai.vercel.app/
 
 ## 🎯 Project Objective
 
-The objective of LandResolve AI is to provide an accessible AI assistant that helps users learn about land-related legal concepts, dispute scenarios, ownership issues, boundary conflicts, and general property-related information through a simple conversational interface.
+LandResolve AI aims to simplify Punjab land-related problems by providing an AI-powered legal assistance platform that helps citizens, farmers, landowners, and property buyers understand land records, legal documents, ownership issues, and dispute resolution in simple language.
+
+The platform combines Artificial Intelligence with educational resources to explain Punjab land documents such as Jamabandi, Fard, Khasra, Girdawari, Mutation (Intkal), Registry, Partition Deed, Power of Attorney, and other land records through interactive conversations, educational sample images, PDF reports, and voice-enabled assistance.
+
+The long-term vision of LandResolve AI is to make land-related legal information more accessible, reduce confusion surrounding property disputes, and provide an easy-to-use digital assistant for land guidance across Punjab and, in the future, all of India.
 
 ## 🔄 Development Workflow
 
