@@ -1,4 +1,7 @@
 DOCUMENT_IMAGES = {
+    "fard": "punjab_Jamabandi.png",
+    "farde": "punjab_Jamabandi.png",
+    "fard jamabandi": "punjab_Jamabandi.png",
     "jamabandi": "punjab_Jamabandi.png",
     "girdawari": "punjab_Girdawari.avif",
     "khasra": "punjab_khasra_document.png",
