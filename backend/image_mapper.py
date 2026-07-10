@@ -1,37 +1,24 @@
 DOCUMENT_IMAGES = {
     "jamabandi": "punjab_Jamabandi.png",
-
     "girdawari": "punjab_Girdawari.avif",
-
     "khasra": "punjab_khasra_document.png",
     "khasra document": "punjab_khasra_document.png",
-
-    "mutation": "punjab_Mutation Registe,Intkal.png",
-    "mutation register": "punjab_Mutation Registe,Intkal.png",
-    "intkal": "punjab_Mutation Registe,Intkal.png",
-
+    "mutation": "punjab_mutation_register_intkal.png",
+    "mutation register": "punjab_mutation_register_intkal.png",
+    "intkal": "punjab_mutation_register_intkal.png",
     "sale deed": "sale_deed.png",
-
     "registry": "registry_intkal.png",
     "registry intkal": "registry_intkal.png",
-
-    "power of attorney": "punjab_Power of Attorney.png",
-    "poa": "punjab_Power of Attorney.png",
-
+    "power of attorney": "punjab_power_of_attorney.png",
+    "poa": "punjab_power_of_attorney.png",
     "will": "punjab_will.png",
     "will document": "punjab_will.png",
-
-    "Partition deed": "punjab_parition_dead.png",
-
+    "partition deed": "punjab_partition_deed.png",
     "tatima": "punjab_tatima.png",
-
-    "aks shajra": "punjab_Aks Shajra.png",
-    "aks shajara": "punjab_Aks Shajra.png",
-    "shajra": "punjab_Aks Shajra.png",
-
+    "aks shajra": "punjab_aks_shajra.png",
+    "aks shajara": "punjab_aks_shajra.png",
+    "shajra": "punjab_aks_shajra.png",
     "e stamp": "e_stamp_punjab_sample.jpg",
     "estamp": "e_stamp_punjab_sample.jpg",
     "e-stamp": "e_stamp_punjab_sample.jpg",
 }
-
-

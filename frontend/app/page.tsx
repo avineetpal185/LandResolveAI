@@ -62,7 +62,7 @@ function detectGenerateIntent(text: string): "pdf" | "image" | "ai_image" | null
     "sale deed",
     "sale-deed",
 
-    "partition deed",
+    "Partition deed",
     "partition",
 
     "power of attorney",
@@ -99,10 +99,11 @@ function detectGenerateIntent(text: string): "pdf" | "image" | "ai_image" | null
     "view"
   ];
 
-  if (
-    educationalDocs.some(doc => t.includes(doc)) &&
-    documentWords.some(word => t.includes(word))
-  ) {
+  const isEducationalDocument = educationalDocs.some(doc =>
+    t.includes(doc)
+  );
+
+  if (isEducationalDocument) {
     return null;
   }
 
