@@ -24,6 +24,71 @@ https://github.com/avineetpal185/LandResolveAI/releases/latest
 * Secure cloud deployment
 * Cross-platform accessibility
 
+### 📄 PDF & Document Support
+- Generate PDF reports
+- Upload PDF documents
+- AI document analysis
+- Land document explanations
+- Educational sample documents
+
+
+* ### 🖼️ Educational Document Images
+Supports educational sample images for Punjab land records including:
+
+- Jamabandi
+- Fard
+- Girdawari
+- Khasra Document
+- Mutation Register (Intkal)
+- Registry
+- Sale Deed
+- Partition Deed
+- Power of Attorney
+- Will
+- Tatima
+- Aks Shajra
+- Punjab E-Stamp
+
+These images are provided for **educational purposes only**.
+
+### 🎤 Voice Features
+- Voice input
+- Speech-to-text
+- Hands-free interaction
+
+### 👤 User Authentication
+- Google Gmail Login
+- Secure user authentication
+- Individual user accounts
+- Personal chat history
+- Conversation memory
+
+Each user's chat history is private.
+
+Users can only access conversations associated with their own Google account.
+
+### 💬 Smart Chat Experience
+- Interactive chatbot interface
+- Conversation history
+- AI memory support
+- Fast responses
+- Responsive chat interface
+
+### 🎨 Modern UI
+- Beautiful responsive interface
+- Mobile-friendly design
+- Dark theme
+- Clean chat experience
+- Optimized user interface
+
+### ☁️ Cloud Deployment
+- Secure cloud deployment
+- Fast backend processing
+- Cross-platform accessibility
+- Automatic website updates
+
+
+
 ## 🛠️ Tech Stack
 
 ### Frontend
@@ -96,13 +161,6 @@ VS Code → GitHub → Vercel/Render → Live Website → Android App
 
 All website updates are deployed through GitHub and automatically reflected in the Android application without requiring users to install a new APK.
 
-## 📷 Screenshots
-
-Add screenshots of:
-
-* Web Application
-* Android Application
-* Chat Interface
 
 ## 👨‍💻 Developer
 
