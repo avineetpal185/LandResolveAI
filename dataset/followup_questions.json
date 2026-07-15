@@ -1,0 +1,25 @@
+{
+    "document_expired": [
+      "Which land document are you referring to? (Jamabandi, Registry, Mutation, Fard)",
+      "Which district and village is the property in?",
+      "Do you want a fresh copy or do you want to update an existing record?"
+    ],
+  
+    "mutation_problem": [
+      "Have you already applied for Mutation (Intkal)?",
+      "Do you have the registered sale deed?",
+      "Which district and village is the property in?"
+    ],
+  
+    "boundary_dispute": [
+      "Do you have the latest Jamabandi or Registry?",
+      "Has official demarcation already been done?",
+      "Which district and village is the property in?"
+    ],
+  
+    "inheritance_case": [
+      "Is there a registered will?",
+      "Are there other legal heirs?",
+      "Which district and village is the property in?"
+    ]
+  }

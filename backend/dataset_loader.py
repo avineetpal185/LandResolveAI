@@ -64,6 +64,7 @@ def load_all_datasets():
     DATASETS["user_queries"] = load_json("user_queries.json")
 
     DATASETS["faq"] = load_jsonl("faq.jsonl")
+    DATASETS["followup_questions"] = load_json("followup_questions.json")
 
     print(f"Loaded {len(DATASETS)} datasets")
 

@@ -129,6 +129,12 @@ def search_village(user_query):
 
     return None
 
+def get_followup_questions(intent):
+
+    followup_data = datasets.get("followup_questions", {})
+
+    return followup_data.get(intent, [])
+
 
 def search_dataset(user_query):
     original_query = user_query.lower()
@@ -146,7 +152,8 @@ def search_dataset(user_query):
     village_result = search_village(user_query)
 
     result = {
-        "intent": intent
+       "intent": intent,
+       "followup_questions": get_followup_questions(intent)
     }
 
     if faq_result:

@@ -34,6 +34,7 @@ import httpx
 import json
 import requests 
 from datetime import datetime
+pending_followups = {}
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -661,6 +662,47 @@ async def chat(request: ChatRequest):
     latest_message = request.messages[-1].content
     
     dataset_result = search_dataset(latest_message)
+    if conversation_id in pending_followups:
+
+        previous = pending_followups.pop(conversation_id)
+
+        latest_message = f"""
+    Original Question:
+    {previous["question"]}
+
+    User Reply:
+    {latest_message}
+    """
+    
+    followup_questions = dataset_result.get("followup_questions", [])
+
+    if followup_questions:
+
+        reply = "Before I guide you, please answer these questions:\n\n"
+
+        for i, q in enumerate(followup_questions, 1):
+            reply += f"{i}. {q}\n"
+
+        db.add(Message(
+            conversation_id=conversation_id,
+            role="assistant",
+            content=reply
+        ))
+        db.commit()
+
+        def followup_response():
+            yield reply
+
+        return StreamingResponse(
+            followup_response(),
+            media_type="text/plain",
+            headers={
+                "X-Conversation-Id": str(conversation_id)
+            }
+        )
+    
+    
+        
 
     print("DATASET RESULT:")
     print(dataset_result)
@@ -832,7 +874,7 @@ IMPORTANT:
 
 The PDF contains only questions.
 
-Answer ONLY from the information present in the question.
+
 
 Do NOT invent:
 
@@ -846,9 +888,13 @@ Do NOT invent:
 - document names
 - timelines
 
-If information is not present in the question, say:
+Answer using:
 
-"Not enough information is available in the question."
+1. Punjab Dataset Guidance
+2. Retrieved Legal Context
+3. General legal knowledge if the dataset has no answer.
+
+Keep every answer under 5 lines.
 
 Use only simple practical guidance.
 
@@ -1086,9 +1132,24 @@ Legal Context:
     dataset_context = ""
 
     if dataset_result:
+        
+        followup_text = ""
+
+        if dataset_result.get("followup_questions"):
+
+            followup_text = "\n\nIMPORTANT:\n"
+
+            followup_text += "If the user's question is missing important information, DO NOT answer immediately.\n"
+
+            followup_text += "Ask these questions first:\n"
+
+            for q in dataset_result["followup_questions"]:
+                followup_text += f"- {q}\n"
 
         dataset_context = f"""
 Punjab Dataset Guidance
+
+{followup_text}
 
 IMPORTANT:
 If FAQ data exists, use that answer as the primary answer.
