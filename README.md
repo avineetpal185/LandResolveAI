@@ -1,5 +1,5 @@
 # LandResolve AI ⚖️🤖
-<img width="100%" alt="LandResolve AI" src="screenshots/landing-page.png" />
+<img width="100%" alt="LandResolve AI" src="./screenshots/Screenshot%202026-06-12%20164532.png" />
 
 LandResolve AI is an AI-powered legal land assistance platform designed to help users understand land-related disputes, property issues, and legal concepts through an interactive AI chat interface.
 
