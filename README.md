@@ -1,5 +1,5 @@
-src="https://github.com/user-attachments/assets/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 # LandResolve AI ⚖️🤖
+<img width="100%" alt="LandResolve AI" src="screenshots/landing-page.png" />
 
 LandResolve AI is an AI-powered legal land assistance platform designed to help users understand land-related disputes, property issues, and legal concepts through an interactive AI chat interface.
 
